@@ -1,26 +1,74 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --ivory: #FFFFF0;
+  --spruce: #2E5A4C;
+  --spruce-light: #3D6B5A;
+  --text-dark: #1A1A1A;
+  --text-light: #4A4A4A;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--ivory);
+  color: var(--text-dark);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Базовые стили */
+input, select, textarea {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(46, 90, 76, 0.2);
+  border-radius: 20px;
+  padding: 14px 18px;
+  color: var(--text-dark);
+  width: 100%;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--spruce);
+}
+
+button {
+  cursor: pointer;
+}
+
+/* Glass-карточки */
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(46, 90, 76, 0.15);
+  border-radius: 28px;
+}
+
+.btn-primary {
+  background: var(--spruce);
+  color: white;
+  padding: 12px 28px;
+  border-radius: 40px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: var(--spruce-light);
+}
+
+.btn-outline {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--spruce);
+  color: var(--spruce);
+  padding: 12px 28px;
+  border-radius: 40px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-outline:hover {
+  background: var(--spruce);
+  color: white;
 }
