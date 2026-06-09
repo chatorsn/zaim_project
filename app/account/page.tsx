@@ -4,16 +4,22 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
+type User = {
+  id: string;
+  phone: string;
+};
+
 export default function AccountPage() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
 
   useEffect(() => {
     const userId = localStorage.getItem('userId');
+    const userPhone = localStorage.getItem('userPhone');
     if (!userId) {
       router.push('/login');
     } else {
-      setUser({ id: userId, phone: localStorage.getItem('userPhone') });
+      setUser({ id: userId, phone: userPhone || '' });
     }
   }, []);
 

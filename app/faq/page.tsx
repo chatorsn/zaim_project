@@ -2,10 +2,15 @@
 import { useState } from 'react';
 import Link from 'next/link';
 
-export default function FAQ() {
-  const [openIndex, setOpenIndex] = useState(null);
+type FAQItem = {
+  q: string;
+  a: string;
+};
 
-  const faqs = [
+export default function FAQ() {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  const faqs: FAQItem[] = [
     { q: 'Кто может получить займ?', a: 'Любой совершеннолетний резидент страны присутствия сервиса с действующим удостоверением личности и зарегистрированным номером телефона.' },
     { q: 'Какие документы необходимы?', a: 'Для подачи заявки требуется минимальный набор данных. В большинстве случаев достаточно удостоверения личности и активного номера телефона.' },
     { q: 'Как быстро принимается решение?', a: 'Заявки рассматриваются автоматически и обрабатываются в течение нескольких минут.' },

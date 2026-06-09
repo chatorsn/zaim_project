@@ -60,7 +60,6 @@ CREATE TABLE IF NOT EXISTS admins (
   role VARCHAR(20) DEFAULT 'operator'
 );
 
--- Создаём админов
 INSERT INTO admins (login, password_hash, role) VALUES 
 ('admin', '$2a$10$rVgFQYgXrFk5sXrFk5sXrF', 'admin'),
 ('operator', '$2a$10$rVgFQYgXrFk5sXrFk5sXrF', 'operator')
