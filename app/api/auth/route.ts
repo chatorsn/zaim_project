@@ -1,16 +1,7 @@
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
 
-// Глобальное хранилище (простое решение для демо)
-declare global {
-  var otpStore: Map<string, { code: string; expires: number }>;
-}
-
-if (!global.otpStore) {
-  global.otpStore = new Map();
-}
-
-const otpStore = global.otpStore;
+const otpStore = new Map();
 
 export async function POST(req: Request) {
   try {
@@ -20,7 +11,7 @@ export async function POST(req: Request) {
     console.log(`[OTP] ${phone} -> ${code}`);
     return NextResponse.json({ success: true });
   } catch (error) {
-    return NextResponse.json({ error: 'Server error' }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Server error' }, { status: 500 });
   }
 }
 
@@ -29,18 +20,16 @@ export async function PUT(req: Request) {
     const { phone, code } = await req.json();
     const stored = otpStore.get(phone);
     
-    console.log('Проверка:', { phone, code, stored });
-    
     if (!stored) {
-      return NextResponse.json({ error: 'Код не запрошен' }, { status: 400 });
+      return NextResponse.json({ success: false, error: 'Запросите код сначала' }, { status: 400 });
     }
     
     if (stored.code !== code) {
-      return NextResponse.json({ error: `Неверный код. Ожидался ${stored.code}, получен ${code}` }, { status: 400 });
+      return NextResponse.json({ success: false, error: `Неверный код. Ожидался ${stored.code}` }, { status: 400 });
     }
     
     if (stored.expires < Date.now()) {
-      return NextResponse.json({ error: 'Код просрочен' }, { status: 400 });
+      return NextResponse.json({ success: false, error: 'Код просрочен' }, { status: 400 });
     }
     
     let user = await query('SELECT * FROM users WHERE phone = $1', [phone]);
@@ -52,6 +41,6 @@ export async function PUT(req: Request) {
     return NextResponse.json({ success: true, user: user.rows[0] });
   } catch (error) {
     console.error('Auth error:', error);
-    return NextResponse.json({ error: 'Database error' }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Database error' }, { status: 500 });
   }
 }
