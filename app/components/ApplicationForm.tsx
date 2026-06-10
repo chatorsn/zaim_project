@@ -62,52 +62,70 @@ export default function ApplicationForm({ userId, onSuccess }: ApplicationFormPr
 
   return (
     <div className="space-y-6">
-      {success && <div className="bg-green-100 border border-green-300 rounded-xl p-3 text-green-700 text-sm text-center">{success}</div>}
-      {error && <div className="bg-red-100 border border-red-300 rounded-xl p-3 text-red-600 text-sm text-center">{error}</div>}
+      {success && <div className="bg-[#F5F2EE] border border-[#5F5247]/20 rounded-2xl p-4 text-[#5F5247] text-sm text-center">{success}</div>}
+      {error && <div className="bg-red-50 border border-red-200 rounded-2xl p-4 text-red-600 text-sm text-center">{error}</div>}
       
-      <form onSubmit={handleSubmit} className="space-y-5">
-        <div className="grid md:grid-cols-2 gap-5">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="grid md:grid-cols-2 gap-6">
+          {/* Сумма */}
           <div>
-            <label className="block text-[#4A4A4A] text-sm mb-1">Сумма (€) *</label>
+            <label className="block text-[#71717A] text-sm mb-2">Сумма займа (€)</label>
             <div className="flex items-center gap-3">
-              <button type="button" onClick={() => updateAmount(formData.amount - 500)} className="w-10 h-10 rounded-full bg-[#F5F0E8] text-[#1A1A1A] text-xl hover:bg-[#E8E0D5] transition">−</button>
-              <input type="number" value={formData.amount} onChange={(e) => updateAmount(Number(e.target.value))} className="w-full text-center text-xl font-semibold border border-[#E2DCD3] rounded-xl py-2" />
-              <button type="button" onClick={() => updateAmount(formData.amount + 500)} className="w-10 h-10 rounded-full bg-[#F5F0E8] text-[#1A1A1A] text-xl hover:bg-[#E8E0D5] transition">+</button>
+              <button type="button" onClick={() => updateAmount(formData.amount - 500)} className="w-12 h-12 rounded-full bg-[#F5F2EE] text-[#5F5247] text-xl hover:bg-[#5F5247] hover:text-white transition">−</button>
+              <input type="number" value={formData.amount} onChange={(e) => updateAmount(Number(e.target.value))} className="w-full text-center text-2xl font-semibold bg-white border border-[#E8E0D7] rounded-xl py-3 text-[#18181B] focus:border-[#5F5247] outline-none" />
+              <button type="button" onClick={() => updateAmount(formData.amount + 500)} className="w-12 h-12 rounded-full bg-[#F5F2EE] text-[#5F5247] text-xl hover:bg-[#5F5247] hover:text-white transition">+</button>
             </div>
-            <p className="text-[#A0A0A0] text-xs mt-1 text-center">от 500 до 50 000 €</p>
+            <p className="text-[#A0A0A0] text-xs mt-2 text-center">от 500 до 50 000 €</p>
           </div>
 
+          {/* Срок */}
           <div>
-            <label className="block text-[#4A4A4A] text-sm mb-1">Срок (дни) *</label>
+            <label className="block text-[#71717A] text-sm mb-2">Срок займа (дни)</label>
             <div className="flex items-center gap-3">
-              <button type="button" onClick={() => updateTerm(formData.term - 1)} className="w-10 h-10 rounded-full bg-[#F5F0E8] text-[#1A1A1A] text-xl hover:bg-[#E8E0D5] transition">−</button>
-              <input type="number" value={formData.term} onChange={(e) => updateTerm(Number(e.target.value))} className="w-full text-center text-xl font-semibold border border-[#E2DCD3] rounded-xl py-2" />
-              <button type="button" onClick={() => updateTerm(formData.term + 1)} className="w-10 h-10 rounded-full bg-[#F5F0E8] text-[#1A1A1A] text-xl hover:bg-[#E8E0D5] transition">+</button>
+              <button type="button" onClick={() => updateTerm(formData.term - 1)} className="w-12 h-12 rounded-full bg-[#F5F2EE] text-[#5F5247] text-xl hover:bg-[#5F5247] hover:text-white transition">−</button>
+              <input type="number" value={formData.term} onChange={(e) => updateTerm(Number(e.target.value))} className="w-full text-center text-2xl font-semibold bg-white border border-[#E8E0D7] rounded-xl py-3 text-[#18181B] focus:border-[#5F5247] outline-none" />
+              <button type="button" onClick={() => updateTerm(formData.term + 1)} className="w-12 h-12 rounded-full bg-[#F5F2EE] text-[#5F5247] text-xl hover:bg-[#5F5247] hover:text-white transition">+</button>
             </div>
-            <p className="text-[#A0A0A0] text-xs mt-1 text-center">от 7 до 90 дней</p>
+            <p className="text-[#A0A0A0] text-xs mt-2 text-center">от 7 до 90 дней</p>
           </div>
         </div>
         
+        {/* Тип заявителя */}
         <div>
-          <label className="block text-[#4A4A4A] text-sm mb-1">Тип заявителя</label>
+          <label className="block text-[#71717A] text-sm mb-2">Тип заявителя</label>
           <div className="flex gap-3">
-            <button type="button" onClick={() => setFormData({...formData, type: 'personal', companyName: ''})} className={`flex-1 py-2 rounded-full border transition ${formData.type === 'personal' ? 'bg-[#C6A43F] text-white border-[#C6A43F]' : 'bg-white border-[#E2DCD3] text-[#4A4A4A] hover:border-[#C6A43F]'}`}>Физическое лицо</button>
-            <button type="button" onClick={() => setFormData({...formData, type: 'business'})} className={`flex-1 py-2 rounded-full border transition ${formData.type === 'business' ? 'bg-[#C6A43F] text-white border-[#C6A43F]' : 'bg-white border-[#E2DCD3] text-[#4A4A4A] hover:border-[#C6A43F]'}`}>Бизнес</button>
+            <button type="button" onClick={() => setFormData({...formData, type: 'personal', companyName: ''})} className={`flex-1 py-3 rounded-full border transition font-medium ${formData.type === 'personal' ? 'bg-[#5F5247] text-white border-[#5F5247]' : 'bg-white text-[#71717A] border-[#E8E0D7] hover:border-[#5F5247]'}`}>Физическое лицо</button>
+            <button type="button" onClick={() => setFormData({...formData, type: 'business'})} className={`flex-1 py-3 rounded-full border transition font-medium ${formData.type === 'business' ? 'bg-[#5F5247] text-white border-[#5F5247]' : 'bg-white text-[#71717A] border-[#E8E0D7] hover:border-[#5F5247]'}`}>Бизнес</button>
           </div>
         </div>
         
+        {/* ФИО и Телефон */}
         <div className="grid md:grid-cols-2 gap-4">
-          <div><label className="block text-[#4A4A4A] text-sm mb-1">ФИО *</label><input type="text" value={formData.fullName} onChange={(e) => setFormData({...formData, fullName: e.target.value})} className="w-full border border-[#E2DCD3] rounded-xl p-3 focus:border-[#C6A43F] outline-none" required /></div>
-          <div><label className="block text-[#4A4A4A] text-sm mb-1">Телефон *</label><input type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full border border-[#E2DCD3] rounded-xl p-3 focus:border-[#C6A43F] outline-none" required /></div>
+          <div>
+            <label className="block text-[#71717A] text-sm mb-2">ФИО *</label>
+            <input type="text" value={formData.fullName} onChange={(e) => setFormData({...formData, fullName: e.target.value})} className="w-full bg-white border border-[#E8E0D7] rounded-xl p-3 text-[#18181B] placeholder-[#A0A0A0] focus:border-[#5F5247] outline-none" placeholder="Иван Иванов" required />
+          </div>
+          <div>
+            <label className="block text-[#71717A] text-sm mb-2">Телефон *</label>
+            <input type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full bg-white border border-[#E8E0D7] rounded-xl p-3 text-[#18181B] placeholder-[#A0A0A0] focus:border-[#5F5247] outline-none" placeholder="+7 999 123-45-67" required />
+          </div>
         </div>
         
-        <div><label className="block text-[#4A4A4A] text-sm mb-1">Email</label><input type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className="w-full border border-[#E2DCD3] rounded-xl p-3 focus:border-[#C6A43F] outline-none" /></div>
+        {/* Email */}
+        <div>
+          <label className="block text-[#71717A] text-sm mb-2">Email</label>
+          <input type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className="w-full bg-white border border-[#E8E0D7] rounded-xl p-3 text-[#18181B] placeholder-[#A0A0A0] focus:border-[#5F5247] outline-none" placeholder="ivan@example.com" />
+        </div>
         
+        {/* Название компании (только для бизнеса) */}
         {formData.type === 'business' && (
-          <div><label className="block text-[#4A4A4A] text-sm mb-1">Название компании *</label><input type="text" value={formData.companyName} onChange={(e) => setFormData({...formData, companyName: e.target.value})} className="w-full border border-[#E2DCD3] rounded-xl p-3 focus:border-[#C6A43F] outline-none" required /></div>
+          <div>
+            <label className="block text-[#71717A] text-sm mb-2">Название компании *</label>
+            <input type="text" value={formData.companyName} onChange={(e) => setFormData({...formData, companyName: e.target.value})} className="w-full bg-white border border-[#E8E0D7] rounded-xl p-3 text-[#18181B] placeholder-[#A0A0A0] focus:border-[#5F5247] outline-none" placeholder="ООО Ромашка" required />
+          </div>
         )}
         
-        <button type="submit" disabled={loading} className="w-full bg-[#C6A43F] text-black py-3 rounded-full font-medium hover:bg-[#D4B96A] transition disabled:opacity-50">
+        <button type="submit" disabled={loading} className="w-full bg-[#5F5247] text-white py-3.5 rounded-full font-medium hover:bg-[#7B6652] transition disabled:opacity-50">
           {loading ? 'Отправка...' : 'Отправить заявку'}
         </button>
       </form>

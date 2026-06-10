@@ -1,0 +1,705 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import ApplicationForm from './components/ApplicationForm';
+
+export default function Home() {
+  const [amount, setAmount] = useState(15000);
+  const [term, setTerm] = useState(45);
+  const [result, setResult] = useState<{ paymentAmount: number; totalAmount: number } | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    setUserId(localStorage.getItem('userId'));
+  }, []);
+
+  const calculate = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/calculator', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount, term })
+      });
+      const data = await res.json();
+      setResult(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!mounted) return null;
+
+  return (
+    <div className="min-h-screen relative bg-[#F8F6F0]">
+      <div className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/hero-bg.jpg')" }} />
+
+      <div className="relative z-10">
+        <header className="fixed top-0 left-0 right-0 z-50 bg-black/70 backdrop-blur-md border-b border-white/15">
+          <div className="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
+            <Link href="/" className="text-2xl font-semibold text-white tracking-tight">LumenBridge</Link>
+            <nav className="hidden md:flex gap-10 text-white/80 text-base">
+              <Link href="/how-it-works" className="hover:text-[#C6A43F] transition">Как работает</Link>
+              <Link href="/for-business" className="hover:text-[#C6A43F] transition">Для бизнеса</Link>
+              <Link href="/faq" className="hover:text-[#C6A43F] transition">FAQ</Link>
+              <Link href="/contacts" className="hover:text-[#C6A43F] transition">Контакты</Link>
+            </nav>
+            {userId ? (
+              <Link href="/account" className="text-[#C6A43F] border border-[#C6A43F] px-6 py-2 rounded-full hover:bg-[#C6A43F] hover:text-black transition">Личный кабинет</Link>
+            ) : (
+              <Link href="/login" className="text-[#C6A43F] border border-[#C6A43F] px-6 py-2 rounded-full hover:bg-[#C6A43F] hover:text-black transition">Войти</Link>
+            )}
+          </div>
+        </header>
+
+        {/* Hero */}
+        <section className="pt-32 pb-16 px-6">
+          <div className="max-w-7xl mx-auto">
+            <div className="max-w-3xl">
+              <h1 className="text-5xl lg:text-7xl font-bold leading-[1.1] tracking-tight text-white mb-6">
+                Получите деньги тогда, когда это действительно нужно
+              </h1>
+              <p className="text-xl text-white/80 mb-8">Простые и прозрачные займы для частных лиц и бизнеса в Европе</p>
+              <div className="flex flex-wrap gap-4">
+                {userId ? (
+                  <Link href="/account" className="bg-[#C6A43F] text-black px-8 py-3 rounded-full font-medium hover:bg-[#D4B96A] transition">Личный кабинет</Link>
+                ) : (
+                  <Link href="/login" className="bg-[#C6A43F] text-black px-8 py-3 rounded-full font-medium hover:bg-[#D4B96A] transition">Получить займ</Link>
+                )}
+                <Link href="/how-it-works" className="border border-white/40 text-white px-8 py-3 rounded-full font-medium hover:bg-white/10 transition">Как работает</Link>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Условия */}
+        <section className="py-12 px-6">
+          <div className="max-w-7xl mx-auto">
+            <h2 className="text-3xl font-semibold text-white text-center mb-8">Основные условия</h2>
+            <div className="grid md:grid-cols-4 gap-6">
+              {[
+                { label: 'Сумма', value: '500 — 50 000 €' },
+                { label: 'Срок', value: '7 — 90 дней' },
+                { label: 'Ставка', value: 'от 0.8% в день' },
+                { label: 'Погашение', value: 'Равными платежами' }
+              ].map((item) => (
+                <div key={item.label} className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl p-6 text-center">
+                  <p className="text-white/70 text-sm mb-1">{item.label}</p>
+                  <p className="text-xl font-semibold text-white">{item.value}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Калькулятор */}
+        <section className="py-12 px-6">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid lg:grid-cols-2 gap-12 bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl p-8 lg:p-12">
+              <div>
+                <p className="text-white/70 mb-2 text-sm">Кредитный калькулятор</p>
+                <h2 className="text-3xl lg:text-4xl font-semibold text-white mb-4">Рассчитайте условия за несколько секунд</h2>
+                <p className="text-white/70">Ставка 0.8% в день</p>
+              </div>
+              <div className="space-y-6">
+                <div>
+                  <div className="flex justify-between text-white mb-3">
+                    <span>Сумма займа</span>
+                    <span className="font-semibold text-[#C6A43F]">{amount.toLocaleString()} €</span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <button onClick={() => setAmount(Math.max(500, amount - 1000))} className="w-12 h-12 rounded-full bg-white/20 text-white text-xl hover:bg-white/30 transition">−</button>
+                    <div className="flex-1 text-center">
+                      <input type="number" value={amount} onChange={(e) => setAmount(Math.min(50000, Math.max(500, Number(e.target.value))))} className="w-full text-center text-2xl font-semibold bg-white/10 border border-white/30 rounded-xl py-3 text-white" />
+                    </div>
+                    <button onClick={() => setAmount(Math.min(50000, amount + 1000))} className="w-12 h-12 rounded-full bg-white/20 text-white text-xl hover:bg-white/30 transition">+</button>
+                  </div>
+                  <div className="flex justify-between text-white/50 text-xs mt-2">
+                    <span>500 €</span>
+                    <span>50 000 €</span>
+                  </div>
+                </div>
+                <div>
+                  <div className="flex justify-between text-white mb-3">
+                    <span>Срок займа</span>
+                    <span className="font-semibold text-[#C6A43F]">{term} дней</span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <button onClick={() => setTerm(Math.max(7, term - 5))} className="w-12 h-12 rounded-full bg-white/20 text-white text-xl hover:bg-white/30 transition">−</button>
+                    <div className="flex-1 text-center">
+                      <input type="number" value={term} onChange={(e) => setTerm(Math.min(90, Math.max(7, Number(e.target.value))))} className="w-full text-center text-2xl font-semibold bg-white/10 border border-white/30 rounded-xl py-3 text-white" />
+                    </div>
+                    <button onClick={() => setTerm(Math.min(90, term + 5))} className="w-12 h-12 rounded-full bg-white/20 text-white text-xl hover:bg-white/30 transition">+</button>
+                  </div>
+                  <div className="flex justify-between text-white/50 text-xs mt-2">
+                    <span>7 дней</span>
+                    <span>90 дней</span>
+                  </div>
+                </div>
+                <button onClick={calculate} disabled={loading} className="w-full bg-[#C6A43F] text-black py-3 rounded-full font-medium hover:bg-[#D4B96A] transition">
+                  {loading ? 'Расчёт...' : 'Рассчитать'}
+                </button>
+                {result && (
+                  <div className="bg-white/30 backdrop-blur-sm rounded-xl p-5">
+                    <div className="flex justify-between mb-2">
+                      <span className="text-white/70">Платёж в день</span>
+                      <span className="text-xl font-semibold text-white">{result.paymentAmount} €</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-white/70">Итого к возврату</span>
+                      <span className="text-xl font-semibold text-[#C6A43F]">{result.totalAmount} €</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Остальные секции без изменений */}
+        <section className="py-12 px-6">
+          <div className="max-w-7xl mx-auto">
+            <h2 className="text-3xl font-semibold text-white text-center mb-4">Когда деньги нужны сейчас</h2>
+            <p className="text-white/70 text-center max-w-2xl mx-auto mb-10">Не все финансовые вопросы можно отложить</p>
+            <div className="grid md:grid-cols-4 gap-6">
+              {[
+                { title: 'Срочные расходы', desc: 'Неожиданные платежи, которые нельзя перенести' },
+                { title: 'Задержка дохода', desc: 'Когда деньги нужны сейчас, а поступления позже' },
+                { title: 'Бизнес-задачи', desc: 'Кассовые разрывы или операционные расходы' },
+                { title: 'Возможности', desc: 'Ситуации, где важно действовать без промедления' }
+              ].map((item) => (
+                <div key={item.title} className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl p-6 text-center">
+                  <h3 className="text-lg font-semibold text-white mb-2">{item.title}</h3>
+                  <p className="text-white/70 text-sm">{item.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="py-12 px-6">
+          <div className="max-w-7xl mx-auto">
+            <h2 className="text-3xl font-semibold text-white text-center mb-4">Вы заранее знаете все условия</h2>
+            <p className="text-white/70 text-center mb-10">Прозрачность и честность — основа нашей работы</p>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[
+                'Никаких скрытых комиссий — полная стоимость займа известна до оформления',
+                'Быстрое рассмотрение — заявки обрабатываются в течение нескольких минут',
+                'Безопасность данных — современные технологии защиты',
+                'Гибкое погашение — выбирайте удобный срок и сумму',
+                'Улучшение условий со временем — при повторных займах более выгодные параметры',
+                'Индивидуальный подход к каждому клиенту'
+              ].map((item, idx) => (
+                <div key={idx} className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl p-6 text-center flex items-center justify-center min-h-[100px]">
+                  <p className="text-white text-sm leading-relaxed">{item}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="py-12 px-6">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid md:grid-cols-2 gap-8">
+              <div className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl p-8">
+                <h2 className="text-2xl font-semibold text-white mb-4">О LumenBridge Finance Ltd</h2>
+                <p className="text-white/80 leading-relaxed mb-4">
+                  LumenBridge Finance Ltd — финансовая организация, предоставляющая быстрые и доступные решения в сфере кредитования в Европе.
+                </p>
+                <p className="text-white/80 leading-relaxed">
+                  Наша цель — упростить доступ к финансированию за счёт прозрачных условий и современных технологий.
+                </p>
+              </div>
+              <div className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl p-8">
+                <h3 className="text-2xl font-semibold text-white mb-4">Улучшение кредитной истории</h3>
+                <p className="text-white/80 mb-4">Своевременное погашение займа помогает улучшить кредитный рейтинг и открывает доступ к более выгодным условиям.</p>
+                <ul className="space-y-2 text-white/70 mb-6">
+                  <li>• Возможность начать с небольшой суммы</li>
+                  <li>• Формирование положительной кредитной истории</li>
+                </ul>
+                <Link href="/login" className="inline-block text-[#C6A43F] font-medium hover:underline">Начать с небольшого займа →</Link>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="py-12 px-6">
+          <div className="max-w-7xl mx-auto text-center">
+            <h2 className="text-3xl font-semibold text-white mb-4">Работаем прозрачно и в рамках закона</h2>
+            <div className="grid md:grid-cols-4 gap-6 mt-8">
+              {[
+                'Соответствие GDPR',
+                'Ответственный подход',
+                'Защита данных',
+                'Понятные условия'
+              ].map((item) => (
+                <div key={item} className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl p-4 text-center">
+                  <p className="text-white font-medium">{item}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="py-12 px-6">
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-2xl p-8">
+              <h2 className="text-2xl font-semibold text-white text-center mb-6">Подать заявку на займ</h2>
+              <ApplicationForm userId={userId || undefined} />
+            </div>
+          </div>
+        </section>
+
+        <footer className="border-t border-white/20 py-12 px-6 bg-black/40 backdrop-blur-sm">
+          <div className="max-w-7xl mx-auto grid md:grid-cols-4 gap-8">
+            <div>
+              <h3 className="text-white font-semibold mb-4">LumenBridge Finance</h3>
+              <p className="text-sm text-white/60">Краткосрочные финансовые решения</p>
+              <p className="text-sm text-white/60 mt-2">18 Lower Baggot Street, Dublin 2</p>
+              <p className="text-sm text-[#C6A43F] mt-2">support@lumenbridge.example</p>
+            </div>
+            <div>
+              <h4 className="text-sm font-medium text-white/60 mb-4">КОМПАНИЯ</h4>
+              <ul className="space-y-2 text-sm text-white/60">
+                <li><Link href="/how-it-works">Как работает</Link></li>
+                <li><Link href="/for-business">Для бизнеса</Link></li>
+                <li><Link href="/faq">FAQ</Link></li>
+                <li><Link href="/contacts">Контакты</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-sm font-medium text-white/60 mb-4">ДОКУМЕНТЫ</h4>
+              <ul className="space-y-2 text-sm text-white/60">
+                <li><Link href="/privacy">Политика</Link></li>
+                <li><Link href="/cookies">Cookie Policy</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-sm font-medium text-white/60 mb-4">КОНТАКТЫ</h4>
+              <p className="text-sm text-white/60">+353 1 531 8420</p>
+              <p className="text-sm text-[#C6A43F] mt-2">support@lumenbridge.example</p>
+            </div>
+          </div>
+          <div className="text-center text-white/40 text-xs mt-8 pt-8 border-t border-white/20">
+            <p>© 2024 LumenBridge Finance Ltd. Все права защищены.</p>
+          </div>
+        </footer>
+      </div>
+    </div>
+  );
+}
+'use client';
+import Link from 'next/link';
+
+export default function HowItWorks() {
+  return (
+    <div className="min-h-screen bg-[#FFFFF0]">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-[#E8E0D5]">
+        <div className="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
+          <Link href="/" className="text-xl font-semibold text-[#2E5A4C]">LumenBridge</Link>
+          <nav className="hidden md:flex gap-8 text-[#4A4A4A]">
+            <Link href="/how-it-works" className="text-[#2E5A4C]">Как работает</Link>
+            <Link href="/for-business" className="hover:text-[#2E5A4C] transition">Для бизнеса</Link>
+            <Link href="/faq" className="hover:text-[#2E5A4C] transition">FAQ</Link>
+            <Link href="/contacts" className="hover:text-[#2E5A4C] transition">Контакты</Link>
+          </nav>
+          <Link href="/login" className="text-[#2E5A4C] border border-[#2E5A4C] px-5 py-2 rounded-full hover:bg-[#2E5A4C] hover:text-white transition">Войти</Link>
+        </div>
+      </header>
+
+      <main className="pt-32 pb-20 px-6">
+        <div className="max-w-4xl mx-auto">
+          <Link href="/" className="inline-block mb-6 text-[#2E5A4C] hover:underline">← На главную</Link>
+          <h1 className="text-5xl lg:text-6xl font-bold text-[#2E5A4C] mb-6 text-center">Как работает сервис</h1>
+          <p className="text-xl text-[#4A4A4A] text-center mb-12">
+            Мы сделали процесс получения займа максимально простым и понятным. Всё оформляется онлайн за несколько минут.
+          </p>
+
+          <div className="space-y-8">
+            <div className="bg-white border border-[#E8E0D5] rounded-3xl p-8 shadow-sm">
+              <p className="text-[#2E5A4C] text-sm font-medium mb-2">Шаг 1</p>
+              <h2 className="text-2xl font-bold text-[#2E5A4C] mb-3">Регистрация</h2>
+              <p className="text-[#4A4A4A] leading-relaxed">Введите номер телефона и подтвердите его с помощью SMS-кода. После этого вы получаете доступ к личному кабинету, где можно управлять заявками и отслеживать статус займа.</p>
+            </div>
+
+            <div className="bg-white border border-[#E8E0D5] rounded-3xl p-8 shadow-sm">
+              <p className="text-[#2E5A4C] text-sm font-medium mb-2">Шаг 2</p>
+              <h2 className="text-2xl font-bold text-[#2E5A4C] mb-3">Подача заявки</h2>
+              <p className="text-[#4A4A4A] leading-relaxed">Выберите сумму и срок займа, укажите необходимую информацию и отправьте заявку на рассмотрение. Все условия отображаются заранее.</p>
+            </div>
+
+            <div className="bg-white border border-[#E8E0D5] rounded-3xl p-8 shadow-sm">
+              <p className="text-[#2E5A4C] text-sm font-medium mb-2">Шаг 3</p>
+              <h2 className="text-2xl font-bold text-[#2E5A4C] mb-3">Проверка и одобрение</h2>
+              <p className="text-[#4A4A4A] leading-relaxed">Заявка анализируется автоматически на основе предоставленных данных. Решение принимается в короткие сроки. При повторных обращениях могут быть доступны более выгодные условия.</p>
+            </div>
+
+            <div className="bg-white border border-[#E8E0D5] rounded-3xl p-8 shadow-sm">
+              <p className="text-[#2E5A4C] text-sm font-medium mb-2">Шаг 4</p>
+              <h2 className="text-2xl font-bold text-[#2E5A4C] mb-3">Получение средств</h2>
+              <p className="text-[#4A4A4A] leading-relaxed">После одобрения деньги переводятся на указанный банковский счёт. Перевод осуществляется сразу после подтверждения условий.</p>
+            </div>
+
+            <div className="bg-white border border-[#E8E0D5] rounded-3xl p-8 shadow-sm">
+              <p className="text-[#2E5A4C] text-sm font-medium mb-2">Шаг 5</p>
+              <h2 className="text-2xl font-bold text-[#2E5A4C] mb-3">Погашение</h2>
+              <p className="text-[#4A4A4A] leading-relaxed">Погашение осуществляется удобным для вас способом в установленный срок. Вы можете внести платеж заранее без дополнительных комиссий.</p>
+            </div>
+          </div>
+
+          <div className="mt-12 bg-[#F5F0E8] rounded-3xl p-8">
+            <h3 className="text-xl font-bold text-[#2E5A4C] mb-4">Важно знать</h3>
+            <ul className="space-y-2 text-[#4A4A4A]">
+              <li>• Все условия займа отображаются до его оформления</li>
+              <li>• Мы не взимаем скрытые комиссии</li>
+              <li>• Данные клиентов обрабатываются в соответствии с требованиями законодательства</li>
+              <li>• Информация о погашении учитывается во внутренней истории клиента</li>
+            </ul>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
+'use client';
+import Link from 'next/link';
+
+export default function ForBusiness() {
+  return (
+    <div className="min-h-screen bg-[#FFFFF0]">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-[#E8E0D5]">
+        <div className="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
+          <Link href="/" className="text-xl font-semibold text-[#2E5A4C]">LumenBridge</Link>
+          <nav className="hidden md:flex gap-8 text-[#4A4A4A]">
+            <Link href="/how-it-works" className="hover:text-[#2E5A4C] transition">Как работает</Link>
+            <Link href="/for-business" className="text-[#2E5A4C]">Для бизнеса</Link>
+            <Link href="/faq" className="hover:text-[#2E5A4C] transition">FAQ</Link>
+            <Link href="/contacts" className="hover:text-[#2E5A4C] transition">Контакты</Link>
+          </nav>
+          <Link href="/login" className="text-[#2E5A4C] border border-[#2E5A4C] px-5 py-2 rounded-full hover:bg-[#2E5A4C] hover:text-white transition">Войти</Link>
+        </div>
+      </header>
+
+      <main className="pt-32 pb-20 px-6">
+        <div className="max-w-4xl mx-auto">
+          <Link href="/" className="inline-block mb-6 text-[#2E5A4C] hover:underline">← На главную</Link>
+          <h1 className="text-5xl lg:text-6xl font-bold text-[#2E5A4C] mb-6 text-center">Займы для бизнеса в Европе</h1>
+          <p className="text-xl text-[#4A4A4A] text-center mb-12">
+            Краткосрочные финансовые решения для предпринимателей и компаний
+          </p>
+
+          <div className="grid md:grid-cols-2 gap-8 mb-12">
+            <div className="bg-white border border-[#E8E0D5] rounded-3xl p-8 shadow-sm">
+              <h2 className="text-2xl font-bold text-[#2E5A4C] mb-4">Условия финансирования</h2>
+              <div className="space-y-3">
+                <div className="flex justify-between py-2 border-b border-[#E8E0D5]">
+                  <span className="text-[#4A4A4A]">Сумма займа</span>
+                  <span className="font-medium text-[#2E5A4C]">30 000 — 500 000 EUR</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-[#E8E0D5]">
+                  <span className="text-[#4A4A4A]">Срок</span>
+                  <span className="font-medium text-[#2E5A4C]">1 — 12 месяцев</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-[#E8E0D5]">
+                  <span className="text-[#4A4A4A]">Залог</span>
+                  <span className="font-medium text-[#2E5A4C]">Не требуется</span>
+                </div>
+                <div className="flex justify-between py-2">
+                  <span className="text-[#4A4A4A]">Рассмотрение</span>
+                  <span className="font-medium text-[#2E5A4C]">Быстрое онлайн</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white border border-[#E8E0D5] rounded-3xl p-8 shadow-sm">
+              <h2 className="text-2xl font-bold text-[#2E5A4C] mb-4">Преимущества</h2>
+              <ul className="space-y-2 text-[#4A4A4A]">
+                <li>• Быстрый доступ к средствам</li>
+                <li>• Простая процедура оформления</li>
+                <li>• Прозрачные условия без скрытых платежей</li>
+                <li>• Поддержка малого и среднего бизнеса</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="bg-white border border-[#E8E0D5] rounded-3xl p-8 shadow-sm">
+            <h2 className="text-2xl font-bold text-[#2E5A4C] mb-4">Требования к заемщикам</h2>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <h3 className="text-lg font-semibold text-[#2E5A4C] mb-3">Для компаний (PVT, LTD)</h3>
+                <ul className="space-y-1 text-[#4A4A4A]">
+                  <li>• Certificate of Incorporation</li>
+                  <li>• Регистрационный номер компании</li>
+                  <li>• Удостоверение личности директора</li>
+                  <li>• Банковская выписка</li>
+                </ul>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-[#2E5A4C] mb-3">Для индивидуальных предпринимателей</h3>
+                <ul className="space-y-1 text-[#4A4A4A]">
+                  <li>• Сертификат регистрации бизнеса</li>
+                  <li>• Регистрационный номер предпринимателя</li>
+                  <li>• Удостоверение личности владельца</li>
+                  <li>• Выписка по банковскому счёту</li>
+                </ul>
+              </div>
+            </div>
+            <div className="mt-6 p-4 bg-[#F5F0E8] rounded-2xl">
+              <p className="text-[#2E5A4C] text-sm">На данный момент заявки принимаются через форму обратной связи. Онлайн-кабинет для бизнеса будет доступен позже.</p>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
+'use client';
+import { useState } from 'react';
+import Link from 'next/link';
+
+type FAQItem = {
+  q: string;
+  a: string;
+};
+
+export default function FAQ() {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  const faqs: FAQItem[] = [
+    { q: 'Кто может получить займ?', a: 'Любой совершеннолетний резидент страны присутствия сервиса с действующим удостоверением личности и зарегистрированным номером телефона.' },
+    { q: 'Какие документы необходимы?', a: 'Для подачи заявки требуется минимальный набор данных. В большинстве случаев достаточно удостоверения личности и активного номера телефона.' },
+    { q: 'Как быстро принимается решение?', a: 'Заявки рассматриваются автоматически и обрабатываются в течение нескольких минут.' },
+    { q: 'Когда я получу деньги?', a: 'После одобрения средства переводятся сразу на указанный банковский счёт.' },
+    { q: 'Есть ли скрытые комиссии?', a: 'Нет. Все условия и платежи отображаются до оформления займа.' },
+    { q: 'Можно ли погасить займ досрочно?', a: 'Да, вы можете погасить займ раньше установленного срока без дополнительных комиссий.' },
+    { q: 'Что произойдет при просрочке?', a: 'В случае просрочки могут начисляться дополнительные платежи. Это также влияет на внутреннюю оценку клиента и будущие условия.' },
+    { q: 'Как улучшить кредитную историю?', a: 'Своевременно погашайте займы — это помогает формировать положительную кредитную историю и повышает шансы на получение более выгодных условий в будущем.' }
+  ];
+
+  return (
+    <div className="min-h-screen bg-[#FFFFF0]">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-[#E8E0D5]">
+        <div className="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
+          <Link href="/" className="text-xl font-semibold text-[#2E5A4C]">LumenBridge</Link>
+          <nav className="hidden md:flex gap-8 text-[#4A4A4A]">
+            <Link href="/how-it-works" className="hover:text-[#2E5A4C] transition">Как работает</Link>
+            <Link href="/for-business" className="hover:text-[#2E5A4C] transition">Для бизнеса</Link>
+            <Link href="/faq" className="text-[#2E5A4C]">FAQ</Link>
+            <Link href="/contacts" className="hover:text-[#2E5A4C] transition">Контакты</Link>
+          </nav>
+          <Link href="/login" className="text-[#2E5A4C] border border-[#2E5A4C] px-5 py-2 rounded-full hover:bg-[#2E5A4C] hover:text-white transition">Войти</Link>
+        </div>
+      </header>
+
+      <main className="pt-32 pb-20 px-6">
+        <div className="max-w-3xl mx-auto">
+          <Link href="/" className="inline-block mb-6 text-[#2E5A4C] hover:underline">← На главную</Link>
+          <h1 className="text-5xl lg:text-6xl font-bold text-[#2E5A4C] mb-6 text-center">Часто задаваемые вопросы</h1>
+          <p className="text-xl text-[#4A4A4A] text-center mb-12">Ответы на основные вопросы о займах, условиях и процессе оформления</p>
+
+          <div className="space-y-4">
+            {faqs.map((faq, idx) => (
+              <div key={idx} className="bg-white border border-[#E8E0D5] rounded-2xl overflow-hidden shadow-sm">
+                <button
+                  onClick={() => setOpenIndex(openIndex === idx ? null : idx)}
+                  className="w-full flex justify-between items-center p-6 text-left"
+                >
+                  <span className="text-lg font-medium text-[#2E5A4C]">{faq.q}</span>
+                  <span className="text-[#2E5A4C] text-2xl">{openIndex === idx ? '−' : '+'}</span>
+                </button>
+                {openIndex === idx && (
+                  <div className="px-6 pb-6">
+                    <p className="text-[#4A4A4A] leading-relaxed">{faq.a}</p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
+'use client';
+import { useState, FormEvent } from 'react';
+import Link from 'next/link';
+
+export default function Contacts() {
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setSubmitted(true);
+    setTimeout(() => setSubmitted(false), 3000);
+  };
+
+  return (
+    <div className="min-h-screen bg-[#FFFFF0]">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-[#E8E0D5]">
+        <div className="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
+          <Link href="/" className="text-xl font-semibold text-[#2E5A4C]">LumenBridge</Link>
+          <nav className="hidden md:flex gap-8 text-[#4A4A4A]">
+            <Link href="/how-it-works" className="hover:text-[#2E5A4C] transition">Как работает</Link>
+            <Link href="/for-business" className="hover:text-[#2E5A4C] transition">Для бизнеса</Link>
+            <Link href="/faq" className="hover:text-[#2E5A4C] transition">FAQ</Link>
+            <Link href="/contacts" className="text-[#2E5A4C]">Контакты</Link>
+          </nav>
+          <Link href="/login" className="text-[#2E5A4C] border border-[#2E5A4C] px-5 py-2 rounded-full hover:bg-[#2E5A4C] hover:text-white transition">Войти</Link>
+        </div>
+      </header>
+
+      <main className="pt-32 pb-20 px-6">
+        <div className="max-w-6xl mx-auto">
+          <Link href="/" className="inline-block mb-6 text-[#2E5A4C] hover:underline">← На главную</Link>
+          <h1 className="text-5xl lg:text-6xl font-bold text-[#2E5A4C] mb-6 text-center">Свяжитесь с нами</h1>
+          <p className="text-xl text-[#4A4A4A] text-center mb-12">Если у вас есть вопросы или вам нужна помощь — наша команда готова помочь</p>
+
+          <div className="grid lg:grid-cols-2 gap-12">
+            <div className="space-y-6">
+              <div className="bg-white border border-[#E8E0D5] rounded-3xl p-8 shadow-sm">
+                <h2 className="text-2xl font-bold text-[#2E5A4C] mb-4">Контактная информация</h2>
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-[#4A4A4A] text-sm mb-1">Адрес</p>
+                    <p className="text-[#1A1A1A]">18 Lower Baggot Street, Dublin 2, Ireland</p>
+                  </div>
+                  <div>
+                    <p className="text-[#4A4A4A] text-sm mb-1">Email</p>
+                    <p className="text-[#2E5A4C] font-medium">support@lumenbridge.example</p>
+                  </div>
+                  <div>
+                    <p className="text-[#4A4A4A] text-sm mb-1">Телефон</p>
+                    <p className="text-[#1A1A1A]">+353 1 531 8420</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white border border-[#E8E0D5] rounded-3xl p-8 shadow-sm">
+                <h2 className="text-2xl font-bold text-[#2E5A4C] mb-4">Режим работы</h2>
+                <div className="space-y-2 text-[#4A4A4A]">
+                  <p>Понедельник — Пятница: 9:00 — 18:00</p>
+                  <p>Суббота: 10:00 — 16:00</p>
+                  <p>Воскресенье: выходной</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white border border-[#E8E0D5] rounded-3xl p-8 shadow-sm">
+              <h2 className="text-2xl font-bold text-[#2E5A4C] mb-4">Напишите нам</h2>
+              {submitted && (
+                <div className="mb-4 p-3 bg-green-100 border border-green-300 rounded-xl text-green-700 text-center">
+                  Сообщение отправлено! Мы свяжемся с вами.
+                </div>
+              )}
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-[#4A4A4A] text-sm mb-1">Имя *</label>
+                  <input type="text" required className="w-full" />
+                </div>
+                <div>
+                  <label className="block text-[#4A4A4A] text-sm mb-1">Email *</label>
+                  <input type="email" required className="w-full" />
+                </div>
+                <div>
+                  <label className="block text-[#4A4A4A] text-sm mb-1">Сообщение *</label>
+                  <textarea rows={4} required className="w-full resize-none" />
+                </div>
+                <button type="submit" className="w-full bg-[#2E5A4C] text-white py-3 rounded-full font-medium hover:bg-[#3D6B5A] transition">
+                  Отправить
+                </button>
+              </form>
+              <p className="text-xs text-[#4A4A4A] mt-4 text-center">Нажимая кнопку, вы соглашаетесь с обработкой персональных данных</p>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
+import Link from 'next/link';
+
+export default function PrivacyPage() {
+  return (
+    <div className="min-h-screen bg-[#FFFFF0]">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-[#E8E0D5]">
+        <div className="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
+          <Link href="/" className="text-xl font-semibold text-[#2E5A4C]">LumenBridge</Link>
+          <Link href="/" className="text-[#2E5A4C] border border-[#2E5A4C] px-5 py-2 rounded-full hover:bg-[#2E5A4C] hover:text-white transition">На главную</Link>
+        </div>
+      </header>
+
+      <main className="pt-32 pb-20 px-6">
+        <div className="max-w-4xl mx-auto bg-white border border-[#E8E0D5] rounded-3xl p-8 shadow-sm">
+          <h1 className="text-3xl font-bold text-[#2E5A4C] mb-6">Политика конфиденциальности</h1>
+          <div className="space-y-6 text-[#4A4A4A] leading-relaxed">
+            <section>
+              <h2 className="text-xl font-semibold text-[#2E5A4C] mb-3">1. Общая информация</h2>
+              <p>LumenBridge Finance Ltd осуществляет деятельность в соответствии с применимым европейским законодательством, включая GDPR.</p>
+            </section>
+            <section>
+              <h2 className="text-xl font-semibold text-[#2E5A4C] mb-3">2. Какие данные мы собираем</h2>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Имя и фамилия</li>
+                <li>Номер телефона</li>
+                <li>Адрес электронной почты</li>
+                <li>Данные о заявках и займах</li>
+              </ul>
+            </section>
+            <section>
+              <h2 className="text-xl font-semibold text-[#2E5A4C] mb-3">3. Цели обработки данных</h2>
+              <p>Данные используются для обработки заявок, заключения договоров, связи с клиентами и выполнения требований законодательства.</p>
+            </section>
+            <section>
+              <h2 className="text-xl font-semibold text-[#2E5A4C] mb-3">4. Контакты</h2>
+              <p>По вопросам обработки данных: support@lumenbridge.example</p>
+            </section>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
+import Link from 'next/link';
+
+export default function CookiesPage() {
+  return (
+    <div className="min-h-screen bg-[#FFFFF0]">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-[#E8E0D5]">
+        <div className="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
+          <Link href="/" className="text-xl font-semibold text-[#2E5A4C]">LumenBridge</Link>
+          <Link href="/" className="text-[#2E5A4C] border border-[#2E5A4C] px-5 py-2 rounded-full hover:bg-[#2E5A4C] hover:text-white transition">На главную</Link>
+        </div>
+      </header>
+
+      <main className="pt-32 pb-20 px-6">
+        <div className="max-w-4xl mx-auto bg-white border border-[#E8E0D5] rounded-3xl p-8 shadow-sm">
+          <h1 className="text-3xl font-bold text-[#2E5A4C] mb-6">Политика использования файлов cookies</h1>
+          <div className="space-y-6 text-[#4A4A4A] leading-relaxed">
+            <section>
+              <h2 className="text-xl font-semibold text-[#2E5A4C] mb-3">1. Что такое cookies</h2>
+              <p>Cookies — это небольшие текстовые файлы, которые сохраняются на устройстве пользователя при посещении сайта.</p>
+            </section>
+            <section>
+              <h2 className="text-xl font-semibold text-[#2E5A4C] mb-3">2. Какие cookies мы используем</h2>
+              <ul className="list-disc pl-5 space-y-1">
+                <li><strong>Обязательные</strong> — необходимы для работы сайта</li>
+                <li><strong>Аналитические</strong> — для анализа посещаемости</li>
+                <li><strong>Функциональные</strong> — для запоминания настроек</li>
+              </ul>
+            </section>
+            <section>
+              <h2 className="text-xl font-semibold text-[#2E5A4C] mb-3">3. Управление cookies</h2>
+              <p>Вы можете управлять cookies через настройки вашего браузера.</p>
+            </section>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}

@@ -9,17 +9,14 @@ type Application = {
   amount: string;
   term: number;
   status: string;
-  type: string;
-  company_name: string;
-  created_at: string;
   user_name: string;
   phone: string;
+  created_at: string;
 };
 
 export default function AdminApplications() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
-  const [updating, setUpdating] = useState<number | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -27,80 +24,64 @@ export default function AdminApplications() {
       router.push('/admin/login');
       return;
     }
-    fetchApplications();
+    fetch('/api/admin/applications')
+      .then(r => r.json())
+      .then(data => {
+        setApplications(data.applications || []);
+        setLoading(false);
+      });
   }, []);
 
-  const fetchApplications = async () => {
-    const res = await fetch('/api/admin/applications');
-    const data = await res.json();
-    if (data.success) setApplications(data.applications);
-    setLoading(false);
-  };
-
   const updateStatus = async (id: number, status: string) => {
-    setUpdating(id);
     await fetch('/api/admin/applications', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id, status })
     });
-    fetchApplications();
-    setUpdating(null);
+    const res = await fetch('/api/admin/applications');
+    const data = await res.json();
+    setApplications(data.applications || []);
   };
 
-  const getStatusLabel = (status: string) => {
-    const map: Record<string, string> = { new: 'Новая', approved: 'Одобрена', rejected: 'Отклонена' };
-    return map[status] || status;
+  const getStatus = (s: string) => {
+    const map: Record<string, string> = { new: '🟡 Новая', approved: '🟢 Одобрена', rejected: '🔴 Отклонена' };
+    return map[s] || s;
   };
 
-  if (loading) {
-    return <div className="min-h-screen bg-[#FFFFF0] flex items-center justify-center text-[#A0A0A0]">Загрузка...</div>;
-  }
+  if (loading) return <div className="min-h-screen bg-[#F7F5F2] flex items-center justify-center">Загрузка...</div>;
 
   return (
-    <div className="min-h-screen bg-[#FFFFF0]">
-      <header className="bg-white/80 backdrop-blur-md border-b border-[#E8E0D5] sticky top-0 z-50 px-6 py-4 flex justify-between items-center">
+    <div className="min-h-screen bg-[#F7F5F2]">
+      <header className="bg-white border-b border-[#E8E0D7] px-6 py-4 flex justify-between items-center">
         <div className="flex items-center gap-4">
-          <Link href="/admin/dashboard" className="text-[#A0A0A0] hover:text-[#C6A43F] transition">← Назад</Link>
-          <h1 className="text-xl font-light text-[#1A1A1A]">Заявки</h1>
+          <Link href="/admin/dashboard" className="text-[#71717A] hover:text-[#5F5247]">← Назад</Link>
+          <h1 className="text-xl font-semibold text-[#18181B]">Заявки</h1>
         </div>
-        <button onClick={() => { localStorage.clear(); router.push('/admin/login'); }} className="text-[#A0A0A0] hover:text-[#C6A43F] transition text-sm">Выйти</button>
+        <button onClick={() => { localStorage.clear(); router.push('/admin/login'); }} className="text-[#71717A] hover:text-red-500">Выйти</button>
       </header>
-
       <main className="p-6">
-        <div className="max-w-3xl mx-auto">
-          {applications.length === 0 && <div className="text-center text-[#A0A0A0] py-12">Нет заявок</div>}
-          <div className="space-y-3">
-            {applications.map((app) => (
-              <div key={app.id} className="bg-white border border-[#E8E0D5] rounded-xl p-5">
-                <div className="flex justify-between items-start flex-wrap gap-3">
-                  <div>
-                    <p className="text-xl font-light text-[#1A1A1A]">{Number(app.amount).toLocaleString()} €</p>
-                    <p className="text-[#A0A0A0] text-sm mt-1">{app.term} дней</p>
-                  </div>
-                  <div className="text-right">
-                    <p className={`text-xs px-2 py-0.5 rounded ${
-                      app.status === 'new' ? 'bg-yellow-50 text-yellow-700' :
-                      app.status === 'approved' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
-                    }`}>
-                      {getStatusLabel(app.status)}
-                    </p>
-                    <p className="text-[#A0A0A0] text-sm mt-2">{app.user_name || `ID: ${app.user_id}`}</p>
-                  </div>
+        <div className="max-w-3xl mx-auto space-y-4">
+          {applications.length === 0 && <div className="text-center text-[#71717A] py-12">Нет заявок</div>}
+          {applications.map((app) => (
+            <div key={app.id} className="bg-white border border-[#E8E0D7] rounded-xl p-5">
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="text-2xl font-bold text-[#18181B]">{Number(app.amount).toLocaleString()} €</p>
+                  <p className="text-[#71717A] text-sm mt-1">Срок: {app.term} дней</p>
                 </div>
-                {app.status === 'new' && (
-                  <div className="flex gap-2 mt-4">
-                    <button onClick={() => updateStatus(app.id, 'approved')} disabled={updating === app.id} className="bg-[#C6A43F] text-white px-4 py-1.5 rounded-lg text-sm hover:bg-[#B8963E] transition">
-                      {updating === app.id ? '...' : 'Одобрить'}
-                    </button>
-                    <button onClick={() => updateStatus(app.id, 'rejected')} disabled={updating === app.id} className="border border-[#E8E0D5] text-[#A0A0A0] px-4 py-1.5 rounded-lg text-sm hover:border-red-200 hover:text-red-500 transition">
-                      {updating === app.id ? '...' : 'Отклонить'}
-                    </button>
-                  </div>
-                )}
+                <div className="text-right">
+                  <p className="text-sm font-medium">{getStatus(app.status)}</p>
+                  <p className="text-[#71717A] text-xs mt-1">{app.user_name || `Пользователь ${app.user_id}`}</p>
+                </div>
               </div>
-            ))}
-          </div>
+              {app.status === 'new' && (
+                <div className="flex gap-3 mt-4">
+                  <button onClick={() => updateStatus(app.id, 'approved')} className="bg-[#5F5247] text-white px-4 py-2 rounded-full text-sm hover:bg-[#7B6652] transition">Одобрить</button>
+                  <button onClick={() => updateStatus(app.id, 'rejected')} className="border border-red-500 text-red-500 px-4 py-2 rounded-full text-sm hover:bg-red-50 transition">Отклонить</button>
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       </main>
     </div>
