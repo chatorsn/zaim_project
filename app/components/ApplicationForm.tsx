@@ -61,56 +61,53 @@ export default function ApplicationForm({ userId, onSuccess }: ApplicationFormPr
   };
 
   return (
-    <div className="bg-white/20 backdrop-blur border border-white/20 rounded-3xl p-8">
-      <h3 className="text-2xl font-bold text-white mb-4">Подать заявку на займ</h3>
-      {success && <div className="bg-green-500/30 text-green-100 p-3 rounded-xl mb-4">{success}</div>}
-      {error && <div className="bg-red-500/30 text-red-100 p-3 rounded-xl mb-4">{error}</div>}
+    <div className="space-y-6">
+      {success && <div className="bg-green-100 border border-green-300 rounded-xl p-3 text-green-700 text-sm text-center">{success}</div>}
+      {error && <div className="bg-red-100 border border-red-300 rounded-xl p-3 text-red-600 text-sm text-center">{error}</div>}
       
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid md:grid-cols-2 gap-6">
-          {/* Сумма */}
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="grid md:grid-cols-2 gap-5">
           <div>
-            <label className="block text-white/70 text-sm mb-2">Сумма займа (€)</label>
+            <label className="block text-[#4A4A4A] text-sm mb-1">Сумма (€) *</label>
             <div className="flex items-center gap-3">
-              <button type="button" onClick={() => updateAmount(formData.amount - 500)} className="w-10 h-10 rounded-full bg-white/10 text-white text-xl hover:bg-white/20 transition">−</button>
-              <input type="number" value={formData.amount} onChange={(e) => updateAmount(Number(e.target.value))} className="w-full text-center text-xl font-semibold" />
-              <button type="button" onClick={() => updateAmount(formData.amount + 500)} className="w-10 h-10 rounded-full bg-white/10 text-white text-xl hover:bg-white/20 transition">+</button>
+              <button type="button" onClick={() => updateAmount(formData.amount - 500)} className="w-10 h-10 rounded-full bg-[#F5F0E8] text-[#1A1A1A] text-xl hover:bg-[#E8E0D5] transition">−</button>
+              <input type="number" value={formData.amount} onChange={(e) => updateAmount(Number(e.target.value))} className="w-full text-center text-xl font-semibold border border-[#E2DCD3] rounded-xl py-2" />
+              <button type="button" onClick={() => updateAmount(formData.amount + 500)} className="w-10 h-10 rounded-full bg-[#F5F0E8] text-[#1A1A1A] text-xl hover:bg-[#E8E0D5] transition">+</button>
             </div>
-            <p className="text-white/40 text-xs mt-2 text-center">от 500 до 50 000 €</p>
+            <p className="text-[#A0A0A0] text-xs mt-1 text-center">от 500 до 50 000 €</p>
           </div>
 
-          {/* Срок */}
           <div>
-            <label className="block text-white/70 text-sm mb-2">Срок займа (дни)</label>
+            <label className="block text-[#4A4A4A] text-sm mb-1">Срок (дни) *</label>
             <div className="flex items-center gap-3">
-              <button type="button" onClick={() => updateTerm(formData.term - 1)} className="w-10 h-10 rounded-full bg-white/10 text-white text-xl hover:bg-white/20 transition">−</button>
-              <input type="number" value={formData.term} onChange={(e) => updateTerm(Number(e.target.value))} className="w-full text-center text-xl font-semibold" />
-              <button type="button" onClick={() => updateTerm(formData.term + 1)} className="w-10 h-10 rounded-full bg-white/10 text-white text-xl hover:bg-white/20 transition">+</button>
+              <button type="button" onClick={() => updateTerm(formData.term - 1)} className="w-10 h-10 rounded-full bg-[#F5F0E8] text-[#1A1A1A] text-xl hover:bg-[#E8E0D5] transition">−</button>
+              <input type="number" value={formData.term} onChange={(e) => updateTerm(Number(e.target.value))} className="w-full text-center text-xl font-semibold border border-[#E2DCD3] rounded-xl py-2" />
+              <button type="button" onClick={() => updateTerm(formData.term + 1)} className="w-10 h-10 rounded-full bg-[#F5F0E8] text-[#1A1A1A] text-xl hover:bg-[#E8E0D5] transition">+</button>
             </div>
-            <p className="text-white/40 text-xs mt-2 text-center">от 7 до 90 дней</p>
+            <p className="text-[#A0A0A0] text-xs mt-1 text-center">от 7 до 90 дней</p>
           </div>
         </div>
         
         <div>
-          <label className="block text-white/70 text-sm mb-2">Тип заявителя</label>
-          <div className="flex gap-4">
-            <button type="button" onClick={() => setFormData({...formData, type: 'personal', companyName: ''})} className={`flex-1 py-2 rounded-full transition ${formData.type === 'personal' ? 'bg-[#2E5A4C] text-white' : 'bg-white/10 text-white/70'}`}>Физическое лицо</button>
-            <button type="button" onClick={() => setFormData({...formData, type: 'business'})} className={`flex-1 py-2 rounded-full transition ${formData.type === 'business' ? 'bg-[#2E5A4C] text-white' : 'bg-white/10 text-white/70'}`}>Бизнес</button>
+          <label className="block text-[#4A4A4A] text-sm mb-1">Тип заявителя</label>
+          <div className="flex gap-3">
+            <button type="button" onClick={() => setFormData({...formData, type: 'personal', companyName: ''})} className={`flex-1 py-2 rounded-full border transition ${formData.type === 'personal' ? 'bg-[#C6A43F] text-white border-[#C6A43F]' : 'bg-white border-[#E2DCD3] text-[#4A4A4A] hover:border-[#C6A43F]'}`}>Физическое лицо</button>
+            <button type="button" onClick={() => setFormData({...formData, type: 'business'})} className={`flex-1 py-2 rounded-full border transition ${formData.type === 'business' ? 'bg-[#C6A43F] text-white border-[#C6A43F]' : 'bg-white border-[#E2DCD3] text-[#4A4A4A] hover:border-[#C6A43F]'}`}>Бизнес</button>
           </div>
         </div>
         
         <div className="grid md:grid-cols-2 gap-4">
-          <div><label className="block text-white/70 text-sm mb-1">ФИО *</label><input type="text" value={formData.fullName} onChange={(e) => setFormData({...formData, fullName: e.target.value})} className="w-full" required /></div>
-          <div><label className="block text-white/70 text-sm mb-1">Телефон *</label><input type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full" required /></div>
+          <div><label className="block text-[#4A4A4A] text-sm mb-1">ФИО *</label><input type="text" value={formData.fullName} onChange={(e) => setFormData({...formData, fullName: e.target.value})} className="w-full border border-[#E2DCD3] rounded-xl p-3 focus:border-[#C6A43F] outline-none" required /></div>
+          <div><label className="block text-[#4A4A4A] text-sm mb-1">Телефон *</label><input type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full border border-[#E2DCD3] rounded-xl p-3 focus:border-[#C6A43F] outline-none" required /></div>
         </div>
         
-        <div><label className="block text-white/70 text-sm mb-1">Email</label><input type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className="w-full" /></div>
+        <div><label className="block text-[#4A4A4A] text-sm mb-1">Email</label><input type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className="w-full border border-[#E2DCD3] rounded-xl p-3 focus:border-[#C6A43F] outline-none" /></div>
         
         {formData.type === 'business' && (
-          <div><label className="block text-white/70 text-sm mb-1">Название компании *</label><input type="text" value={formData.companyName} onChange={(e) => setFormData({...formData, companyName: e.target.value})} className="w-full" required /></div>
+          <div><label className="block text-[#4A4A4A] text-sm mb-1">Название компании *</label><input type="text" value={formData.companyName} onChange={(e) => setFormData({...formData, companyName: e.target.value})} className="w-full border border-[#E2DCD3] rounded-xl p-3 focus:border-[#C6A43F] outline-none" required /></div>
         )}
         
-        <button type="submit" disabled={loading} className="w-full bg-[#2E5A4C] text-white py-3 rounded-full font-medium hover:bg-[#3D6B5A] transition disabled:opacity-50">
+        <button type="submit" disabled={loading} className="w-full bg-[#C6A43F] text-black py-3 rounded-full font-medium hover:bg-[#D4B96A] transition disabled:opacity-50">
           {loading ? 'Отправка...' : 'Отправить заявку'}
         </button>
       </form>

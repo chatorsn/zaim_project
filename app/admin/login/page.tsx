@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 
 export default function AdminLogin() {
   const [login, setLogin] = useState('');
@@ -32,66 +33,75 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0D0D0D] to-[#1A1A1A] flex items-center justify-center px-4">
-      <div className="max-w-md w-full">
-        {/* Логотип */}
+    <div className="min-h-screen bg-gradient-to-br from-[#FFFFF0] to-[#F5F0E8] flex items-center justify-center px-4">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="max-w-md w-full"
+      >
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-[#2E5A4C] rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <div className="w-20 h-20 bg-gradient-to-br from-[#C6A43F] to-[#A8862E] rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg">
             <span className="text-2xl font-bold text-white">LB</span>
           </div>
-          <h1 className="text-2xl font-bold text-white">LumenBridge Finance</h1>
-          <p className="text-white/50 text-sm mt-1">Административная панель</p>
+          <h1 className="text-3xl font-bold text-[#1A1A1A] tracking-tight">LumenBridge</h1>
+          <p className="text-[#4A4A4A] text-sm mt-2">Войдите в административную панель</p>
         </div>
 
-        {/* Форма входа */}
-        <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-8">
+        <div className="bg-white shadow-xl rounded-2xl p-8 border border-[#E8E0D5]">
           <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
-              <div className="bg-red-500/20 border border-red-500 rounded-xl p-3 text-red-300 text-sm text-center">
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="bg-red-50 border border-red-200 rounded-xl p-3 text-red-600 text-sm text-center"
+              >
                 {error}
-              </div>
+              </motion.div>
             )}
             
             <div>
-              <label className="block text-white/70 text-sm mb-2">Логин</label>
+              <label className="block text-[#4A4A4A] text-sm mb-2">Логин</label>
               <input
                 type="text"
                 value={login}
                 onChange={(e) => setLogin(e.target.value)}
-                className="w-full bg-black/30 border border-white/20 rounded-xl p-3 text-white focus:border-[#2E5A4C] outline-none transition"
+                className="w-full bg-white border border-[#E8E0D5] rounded-xl p-3 text-[#1A1A1A] placeholder-[#A0A0A0] focus:border-[#C6A43F] focus:outline-none transition"
                 placeholder="admin"
                 required
               />
             </div>
             
             <div>
-              <label className="block text-white/70 text-sm mb-2">Пароль</label>
+              <label className="block text-[#4A4A4A] text-sm mb-2">Пароль</label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-black/30 border border-white/20 rounded-xl p-3 text-white focus:border-[#2E5A4C] outline-none transition"
+                className="w-full bg-white border border-[#E8E0D5] rounded-xl p-3 text-[#1A1A1A] placeholder-[#A0A0A0] focus:border-[#C6A43F] focus:outline-none transition"
                 placeholder="••••••••"
                 required
               />
             </div>
             
-            <button
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={loading}
-              className="w-full bg-[#2E5A4C] hover:bg-[#3D6B5A] text-white py-3 rounded-xl font-medium transition disabled:opacity-50"
+              className="w-full bg-gradient-to-r from-[#C6A43F] to-[#A8862E] hover:from-[#D4B96A] hover:to-[#B8963E] text-white py-3 rounded-xl font-medium transition disabled:opacity-50 shadow-md"
             >
               {loading ? 'Вход...' : 'Войти'}
-            </button>
+            </motion.button>
           </form>
           
           <div className="mt-6 text-center">
-            <Link href="/" className="text-white/40 text-sm hover:text-white/60 transition">
+            <Link href="/" className="text-[#A0A0A0] text-sm hover:text-[#C6A43F] transition">
               ← Вернуться на сайт
             </Link>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
