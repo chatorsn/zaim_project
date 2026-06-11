@@ -35,10 +35,10 @@ export default function AdminLogin() {
     <div className="min-h-screen bg-[#F7F5F2] flex items-center justify-center px-4">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
-          <Link href="/" className="text-2xl font-semibold text-[#18181B] tracking-tight">LumenBridge</Link>
+          <h1 className="text-3xl font-bold text-[#18181B]">LumenBridge</h1>
           <p className="text-[#71717A] mt-2">Вход в административную панель</p>
         </div>
-        <div className="bg-white border border-[#E8E0D7] rounded-2xl p-8 shadow-sm">
+        <div className="bg-white border border-[#E8E0D7] rounded-2xl p-8">
           {error && <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-red-600 text-sm text-center mb-6">{error}</div>}
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
@@ -49,7 +49,7 @@ export default function AdminLogin() {
               <label className="block text-[#71717A] text-sm mb-2">Пароль</label>
               <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-white border border-[#E8E0D7] rounded-xl p-3 focus:border-[#5F5247] outline-none" required />
             </div>
-            <button type="submit" disabled={loading} className="w-full bg-[#5F5247] text-white py-3 rounded-full font-medium hover:bg-[#7B6652] transition disabled:opacity-50">
+            <button type="submit" disabled={loading} className="w-full bg-[#5F5247] text-white py-3 rounded-full font-medium hover:bg-[#7B6652] transition">
               {loading ? 'Вход...' : 'Войти'}
             </button>
           </form>

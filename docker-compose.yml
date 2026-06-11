@@ -1,11 +1,11 @@
 services:
   postgres:
     image: postgres:15
-    container_name: zaim_postgres
+    container_name: lumen_postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: zaim_db
+      POSTGRES_DB: lumen_db
     ports:
       - "5432:5432"
     volumes:
@@ -18,15 +18,17 @@ services:
 
   app:
     build: .
-    container_name: zaim_app
+    container_name: lumen_app
     ports:
       - "3000:3000"
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/zaim_db
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/lumen_db
     depends_on:
       postgres:
         condition: service_healthy
-    command: sh -c "npm run dev"
+    volumes:
+      - .:/app
+      - /app/node_modules
 
 volumes:
   postgres_data:

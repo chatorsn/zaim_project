@@ -1,32 +1,29 @@
 import { NextResponse } from 'next/server';
-
-// Временное хранилище для демо
-const admins = [
-  { login: 'admin', password: 'admin123', role: 'admin' },
-  { login: 'operator', password: 'operator123', role: 'operator' }
-];
+import { query } from '@/lib/db';
 
 export async function POST(req: Request) {
   try {
     const { login, password } = await req.json();
     
-    const admin = admins.find(a => a.login === login);
-    
-    if (!admin) {
-      return NextResponse.json({ success: false, error: 'Неверный логин' }, { status: 401 });
-    }
-    
-    if (admin.password !== password) {
-      return NextResponse.json({ success: false, error: 'Неверный пароль' }, { status: 401 });
+    // Временная заглушка без БД
+    if (login === 'admin' && password === 'admin123') {
+      return NextResponse.json({ 
+        success: true, 
+        token: 'dummy-token', 
+        role: 'admin' 
+      });
     }
     
     return NextResponse.json({ 
-      success: true, 
-      token: 'dummy-token', 
-      role: admin.role 
-    });
+      success: false, 
+      error: 'Неверный логин или пароль' 
+    }, { status: 401 });
+    
   } catch (error) {
-    console.error('Admin login error:', error);
-    return NextResponse.json({ success: false, error: 'Ошибка сервера' }, { status: 500 });
+    console.error('Login error:', error);
+    return NextResponse.json({ 
+      success: false, 
+      error: 'Server error' 
+    }, { status: 500 });
   }
 }
