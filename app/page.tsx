@@ -37,11 +37,30 @@ export default function Home() {
   if (!mounted) return null;
 
   return (
-    <div className="min-h-screen bg-[#F7F5F2] relative overflow-hidden">
-      {/* Круги - теперь точно видны */}
-      <div className="absolute top-[-250px] left-[-150px] w-[700px] h-[700px] rounded-full bg-[#8A735E] opacity-20 blur-[160px] pointer-events-none" />
-      <div className="absolute top-[300px] right-[-200px] w-[600px] h-[600px] rounded-full bg-[#B89E86] opacity-15 blur-[180px] pointer-events-none" />
-      <div className="absolute bottom-0 left-1/3 w-[500px] h-[500px] rounded-full bg-[#D6C4B5] opacity-10 blur-[140px] pointer-events-none" />
+    <div className="min-h-screen bg-gradient-to-br from-[#F7F5F2] via-[#F5F2EE] to-[#EFE8DF] relative">
+      {/* Большие фоновые пятна */}
+      <div className="fixed top-0 left-0 w-[800px] h-[800px] rounded-full bg-[#8B7355]/20 blur-[180px] pointer-events-none" />
+      <div className="fixed top-[30%] right-0 w-[700px] h-[700px] rounded-full bg-[#A1866F]/15 blur-[180px] pointer-events-none" />
+      <div className="fixed bottom-[-100px] left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-[#5F5247]/10 blur-[160px] pointer-events-none" />
+
+      {/* Тонкие линии по бокам */}
+      <div className="fixed left-0 top-0 bottom-0 w-[180px] pointer-events-none opacity-10">
+        <svg className="w-full h-full" viewBox="0 0 180 1000" preserveAspectRatio="none" fill="none">
+          <path d="M150 0 C20 250 20 750 150 1000" stroke="#5F5247" strokeWidth="1.5" fill="none" />
+        </svg>
+      </div>
+      <div className="fixed right-0 top-0 bottom-0 w-[180px] pointer-events-none opacity-15">
+        <svg className="w-full h-full" viewBox="0 0 180 1000" preserveAspectRatio="none" fill="none">
+          <path d="M30 0 C160 250 160 750 30 1000" stroke="#5F5247" strokeWidth="1.5" fill="none" />
+        </svg>
+      </div>
+
+      {/* Декоративные точки */}
+      <div className="fixed left-[5%] top-[20%] w-3 h-3 rounded-full bg-[#5F5247]/20 pointer-events-none" />
+      <div className="fixed right-[8%] top-[40%] w-2 h-2 rounded-full bg-[#5F5247]/15 pointer-events-none" />
+      <div className="fixed left-[10%] top-[60%] w-4 h-4 rounded-full border border-[#5F5247]/15 pointer-events-none" />
+      <div className="fixed right-[12%] top-[75%] w-1.5 h-1.5 rounded-full bg-[#5F5247]/25 pointer-events-none" />
+      <div className="fixed left-[7%] top-[85%] w-2.5 h-2.5 rounded-full bg-[#8B7355]/20 pointer-events-none" />
 
       <div className="relative z-10">
         <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-[#E8E0D7]">
@@ -62,9 +81,10 @@ export default function Home() {
         </header>
 
         <main>
-          {/* Hero секция */}
-          <section className="pt-40 pb-24 px-6">
-            <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-start">
+          {/* Hero секция с номером 01 */}
+          <section className="relative pt-40 pb-24 px-6">
+            <span className="absolute right-8 top-8 text-[180px] font-bold text-[#5F5247]/5 pointer-events-none select-none">01</span>
+            <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
               <div>
                 <h1 className="text-5xl lg:text-7xl font-bold tracking-tight text-[#18181B] mb-6 leading-[1.1]">
                   Получите деньги<br />тогда, когда это<br />действительно нужно
@@ -80,33 +100,39 @@ export default function Home() {
                   )}
                   <Link href="/how-it-works" className="border border-[#5F5247] text-[#5F5247] px-8 py-3 rounded-full font-medium hover:bg-[#5F5247] hover:text-white transition">Как работает</Link>
                 </div>
+                <div className="flex gap-6 mt-8 text-sm text-[#71717A]">
+                  <span>✓ Без залога</span>
+                  <span>✓ Быстрое одобрение</span>
+                  <span>✓ Выплата на счёт</span>
+                </div>
               </div>
-              <div className="bg-white border border-[#E8E0D7] rounded-2xl p-8 lg:p-10 shadow-sm">
-                <h3 className="text-lg font-medium text-[#71717A] mb-8">Условия займа</h3>
-                <div className="space-y-5">
-                  <div className="flex justify-between py-3 border-b border-[#E8E0D7]">
-                    <span className="text-[#71717A]">Сумма</span>
-                    <span className="font-semibold text-[#18181B]">500 – 50 000 €</span>
+
+              <div className="bg-white rounded-2xl border border-[#E8E0D7] p-8 shadow-sm">
+                <div className="grid grid-cols-2 gap-8">
+                  <div>
+                    <p className="text-sm text-[#71717A] mb-1">Сумма</p>
+                    <p className="text-2xl font-bold text-[#5F5247]">500–50 000 €</p>
                   </div>
-                  <div className="flex justify-between py-3 border-b border-[#E8E0D7]">
-                    <span className="text-[#71717A]">Срок</span>
-                    <span className="font-semibold text-[#18181B]">7 – 90 дней</span>
+                  <div>
+                    <p className="text-sm text-[#71717A] mb-1">Срок</p>
+                    <p className="text-2xl font-bold text-[#5F5247]">7–90 дней</p>
                   </div>
-                  <div className="flex justify-between py-3 border-b border-[#E8E0D7]">
-                    <span className="text-[#71717A]">Ставка</span>
-                    <span className="font-semibold text-[#18181B]">от 0.8% в день</span>
+                  <div>
+                    <p className="text-sm text-[#71717A] mb-1">Ставка</p>
+                    <p className="text-2xl font-bold text-[#5F5247]">0.8% в день</p>
                   </div>
-                  <div className="flex justify-between py-3">
-                    <span className="text-[#71717A]">Оформление</span>
-                    <span className="font-semibold text-[#18181B]">Онлайн 24/7</span>
+                  <div>
+                    <p className="text-sm text-[#71717A] mb-1">Оформление</p>
+                    <p className="text-2xl font-bold text-[#5F5247]">24/7</p>
                   </div>
                 </div>
               </div>
             </div>
           </section>
 
-          {/* Калькулятор */}
-          <section className="py-20 px-6 bg-white">
+          {/* Калькулятор - секция 02 */}
+          <section className="relative py-16 px-6 bg-white">
+            <span className="absolute right-8 top-8 text-[180px] font-bold text-[#5F5247]/5 pointer-events-none select-none">02</span>
             <div className="max-w-7xl mx-auto">
               <div className="text-center max-w-2xl mx-auto mb-12">
                 <h2 className="text-4xl lg:text-5xl font-bold text-[#18181B] mb-4">Рассчитайте условия</h2>
@@ -160,61 +186,51 @@ export default function Home() {
             </div>
           </section>
 
-          {/* Почему выбирают нас */}
-          <section className="py-24 px-6 bg-[#F3EFE9]">
+          {/* Почему выбирают нас - секция 03 */}
+          <section className="relative py-20 px-6">
+            <span className="absolute right-8 top-8 text-[180px] font-bold text-[#5F5247]/5 pointer-events-none select-none">03</span>
             <div className="max-w-7xl mx-auto">
-              <div className="grid lg:grid-cols-2 gap-16">
+              <div className="grid lg:grid-cols-2 gap-16 items-center">
                 <div>
-                  <h2 className="text-4xl lg:text-5xl font-bold text-[#18181B] mb-10">Почему выбирают нас</h2>
-                  <div className="space-y-6">
+                  <h2 className="text-4xl lg:text-5xl font-bold text-[#18181B] mb-6">Почему выбирают нас</h2>
+                  <div className="space-y-4">
                     {[
-                      { title: 'Без скрытых комиссий', desc: 'Полная стоимость известна заранее' },
-                      { title: 'Решение за несколько минут', desc: 'Быстрое онлайн-рассмотрение' },
-                      { title: 'Защита персональных данных', desc: 'Современные стандарты безопасности' },
-                      { title: 'Гибкие условия погашения', desc: 'Выбирайте удобный срок и сумму' },
-                      { title: 'Улучшение условий для постоянных клиентов', desc: 'Повторные займы на выгодных условиях' },
-                      { title: 'Индивидуальный подход', desc: 'Учитываем вашу ситуацию' }
+                      'Без скрытых комиссий — полная стоимость известна заранее',
+                      'Решение за несколько минут — быстрое онлайн-рассмотрение',
+                      'Защита персональных данных — современные стандарты безопасности',
+                      'Гибкое погашение — выбирайте удобный срок и сумму',
+                      'Улучшение условий для постоянных клиентов'
                     ].map((item, idx) => (
-                      <div key={idx}>
-                        <p className="font-semibold text-[#18181B] text-lg">{item.title}</p>
-                        <p className="text-[#71717A] mt-1">{item.desc}</p>
+                      <div key={idx} className="flex items-start gap-3">
+                        <span className="text-[#5F5247] text-xl">✓</span>
+                        <span className="text-[#71717A]">{item}</span>
                       </div>
                     ))}
                   </div>
                 </div>
-                <div className="flex flex-col justify-between gap-5">
-                  <div className="bg-white rounded-2xl p-7 text-center border border-[#E8E0D7] shadow-sm">
-                    <div className="text-4xl font-bold text-[#5F5247] mb-2">100%</div>
-                    <div className="text-[#71717A] text-sm">Прозрачные условия</div>
-                    <div className="text-xs text-[#A0A0A0] mt-1">известны до оформления</div>
-                  </div>
-                  <div className="bg-white rounded-2xl p-7 text-center border border-[#E8E0D7] shadow-sm">
-                    <div className="text-4xl font-bold text-[#5F5247] mb-2">24/7</div>
-                    <div className="text-[#71717A] text-sm">Онлайн оформление</div>
-                    <div className="text-xs text-[#A0A0A0] mt-1">в любое время</div>
-                  </div>
-                  <div className="bg-white rounded-2xl p-7 text-center border border-[#E8E0D7] shadow-sm">
-                    <div className="text-4xl font-bold text-[#5F5247] mb-2">GDPR</div>
-                    <div className="text-[#71717A] text-sm">Защита данных</div>
-                    <div className="text-xs text-[#A0A0A0] mt-1">европейские стандарты</div>
-                  </div>
+                <div className="bg-[#F5F2EE] rounded-2xl p-8">
+                  <h3 className="text-2xl font-semibold text-[#18181B] mb-4">Улучшение кредитной истории</h3>
+                  <p className="text-[#71717A] mb-4">Своевременное погашение займа помогает улучшить кредитный рейтинг и открывает доступ к более выгодным условиям.</p>
+                  <Link href="/login" className="inline-block text-[#5F5247] font-medium hover:underline">Начать с небольшого займа →</Link>
                 </div>
               </div>
             </div>
           </section>
 
           {/* Как работает */}
-          <section className="py-20 px-6">
+          <section className="relative py-20 px-6 bg-white">
             <div className="max-w-7xl mx-auto">
-              <h2 className="text-4xl lg:text-5xl font-bold text-center mb-4">Как всё происходит</h2>
-              <p className="text-lg text-[#71717A] text-center max-w-2xl mx-auto mb-16">Оформление займа занимает всего несколько минут</p>
+              <div className="text-center max-w-2xl mx-auto mb-12">
+                <h2 className="text-4xl lg:text-5xl font-bold text-[#18181B] mb-4">Как всё происходит</h2>
+                <p className="text-lg text-[#71717A]">Оформление займа занимает всего несколько минут</p>
+              </div>
               <div className="grid md:grid-cols-3 gap-8">
                 {[
                   { num: '01', title: 'Регистрация', desc: 'Введите номер телефона и подтвердите его с помощью SMS-кода' },
                   { num: '02', title: 'Заявка', desc: 'Выберите сумму и срок займа и отправьте заявку на рассмотрение' },
                   { num: '03', title: 'Получение средств', desc: 'После одобрения деньги поступают на ваш банковский счёт' }
                 ].map((item) => (
-                  <div key={item.num} className="bg-white border border-[#E8E0D7] rounded-2xl p-8 text-center h-[280px] flex flex-col justify-center shadow-sm">
+                  <div key={item.num} className="bg-white border border-[#E8E0D7] rounded-2xl p-8 text-center hover:shadow-md transition">
                     <div className="text-5xl font-bold text-[#5F5247]/20 mb-4">{item.num}</div>
                     <h3 className="text-xl font-semibold mb-3">{item.title}</h3>
                     <p className="text-[#71717A] text-sm">{item.desc}</p>
@@ -224,63 +240,8 @@ export default function Home() {
             </div>
           </section>
 
-          {/* О компании */}
-          <section className="py-20 px-6 bg-white">
-            <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-8">
-              <div className="bg-white border border-[#E8E0D7] rounded-2xl p-8 shadow-sm">
-                <h2 className="text-2xl font-semibold mb-4">О LumenBridge Finance Ltd</h2>
-                <p className="text-[#71717A] leading-relaxed mb-4">
-                  LumenBridge Finance Ltd — финансовая организация, предоставляющая быстрые и доступные решения в сфере кредитования в Европе.
-                </p>
-                <p className="text-[#71717A] leading-relaxed">
-                  Наша цель — упростить доступ к финансированию за счёт прозрачных условий и современных технологий.
-                </p>
-              </div>
-              <div className="bg-white border border-[#E8E0D7] rounded-2xl p-8 shadow-sm">
-                <h3 className="text-2xl font-semibold mb-4">Улучшение кредитной истории</h3>
-                <p className="text-[#71717A] mb-4">Своевременное погашение займа помогает улучшить кредитный рейтинг и открывает доступ к более выгодным условиям.</p>
-                <ul className="space-y-2 text-[#71717A] mb-6">
-                  <li>• Возможность начать с небольшой суммы</li>
-                  <li>• Формирование положительной кредитной истории</li>
-                </ul>
-                <Link href="/login" className="text-[#5F5247] font-medium hover:underline">Начать с небольшого займа →</Link>
-              </div>
-            </div>
-          </section>
-
-          {/* Для бизнеса */}
-          <section className="py-20 px-6">
-            <div className="max-w-7xl mx-auto">
-              <div className="bg-white border border-[#E8E0D7] rounded-2xl p-12 grid lg:grid-cols-2 gap-12 shadow-sm">
-                <div>
-                  <h2 className="text-3xl lg:text-4xl font-bold mb-4">Финансирование для бизнеса</h2>
-                  <p className="text-[#71717A] text-lg mb-6">Решения для компаний и предпринимателей</p>
-                  <Link href="/for-business" className="bg-[#5F5247] text-white px-8 py-3 rounded-full font-medium inline-block hover:bg-[#7B6652] transition">Узнать подробнее</Link>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-[#F5F2EE] rounded-2xl p-4 text-center">
-                    <div className="text-2xl font-bold text-[#5F5247] mb-1">30k–500k</div>
-                    <div className="text-sm text-[#71717A]">EUR</div>
-                  </div>
-                  <div className="bg-[#F5F2EE] rounded-2xl p-4 text-center">
-                    <div className="text-2xl font-bold text-[#5F5247] mb-1">1–12</div>
-                    <div className="text-sm text-[#71717A]">месяцев</div>
-                  </div>
-                  <div className="bg-[#F5F2EE] rounded-2xl p-4 text-center">
-                    <div className="text-2xl font-bold text-[#5F5247] mb-1">Без залога</div>
-                    <div className="text-sm text-[#71717A]">стандартно</div>
-                  </div>
-                  <div className="bg-[#F5F2EE] rounded-2xl p-4 text-center">
-                    <div className="text-2xl font-bold text-[#5F5247] mb-1">Быстро</div>
-                    <div className="text-sm text-[#71717A]">рассмотрение</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
           {/* Форма заявки */}
-          <section className="py-20 px-6 bg-white">
+          <section className="py-20 px-6">
             <div className="max-w-4xl mx-auto">
               <div className="bg-white border border-[#E8E0D7] rounded-2xl p-8 lg:p-12 shadow-sm">
                 <h2 className="text-3xl font-semibold text-center mb-8">Подать заявку на займ</h2>

@@ -21,11 +21,11 @@ export async function PUT(req: Request) {
     const stored = otpStore.get(phone);
     
     if (!stored) {
-      return NextResponse.json({ success: false, error: 'Запросите код сначала' }, { status: 400 });
+      return NextResponse.json({ success: false, error: 'Код не запрошен' }, { status: 400 });
     }
     
     if (stored.code !== code) {
-      return NextResponse.json({ success: false, error: `Неверный код. Ожидался ${stored.code}` }, { status: 400 });
+      return NextResponse.json({ success: false, error: 'Неверный код' }, { status: 400 });
     }
     
     if (stored.expires < Date.now()) {
@@ -40,7 +40,7 @@ export async function PUT(req: Request) {
     otpStore.delete(phone);
     return NextResponse.json({ success: true, user: user.rows[0] });
   } catch (error) {
-    console.error('Auth error:', error);
+    console.error('Auth PUT error:', error);
     return NextResponse.json({ success: false, error: 'Database error' }, { status: 500 });
   }
 }
