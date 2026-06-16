@@ -29,6 +29,7 @@ type Payment = {
   amount: number;
   paid_amount: number;
   status: string;
+  paid_at: string;
 };
 
 type Notification = {
@@ -58,6 +59,7 @@ export default function AccountPage() {
   const [paymentAmount, setPaymentAmount] = useState('');
   const [paymentReference, setPaymentReference] = useState('');
   const [paymentLoading, setPaymentLoading] = useState(false);
+  const [showContractModal, setShowContractModal] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -216,12 +218,8 @@ export default function AccountPage() {
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex justify-between items-center">
           <Link href="/" className="text-xl md:text-2xl font-semibold text-[#18181B] tracking-tight">LumenBridge</Link>
           <div className="flex gap-3">
-            <Link href="/" className="px-5 py-2.5 rounded-full border border-[#5F5247] text-[#5F5247] hover:bg-[#5F5247] hover:text-white transition text-sm font-medium">
-              На главную
-            </Link>
-            <button onClick={logout} className="px-5 py-2.5 rounded-full bg-[#5F5247] text-white hover:bg-[#7B6652] transition text-sm font-medium">
-              Выйти
-            </button>
+            <Link href="/" className="px-5 py-2.5 rounded-full border border-[#5F5247] text-[#5F5247] hover:bg-[#5F5247] hover:text-white transition text-sm font-medium">На главную</Link>
+            <button onClick={logout} className="px-5 py-2.5 rounded-full bg-[#5F5247] text-white hover:bg-[#7B6652] transition text-sm font-medium">Выйти</button>
           </div>
         </div>
       </header>
@@ -285,9 +283,7 @@ export default function AccountPage() {
                 <div className="text-5xl mb-4">📋</div>
                 <h3 className="text-xl font-semibold text-[#18181B] mb-2">У вас пока нет активных займов</h3>
                 <p className="text-[#71717A] mb-6">Создайте первую заявку и получите предварительное решение онлайн</p>
-                <Link href="/" className="inline-block px-8 py-3 rounded-full bg-[#5F5247] text-white hover:bg-[#7B6652] transition font-medium">
-                  Новая заявка
-                </Link>
+                <Link href="/" className="inline-block px-8 py-3 rounded-full bg-[#5F5247] text-white hover:bg-[#7B6652] transition font-medium">Новая заявка</Link>
               </Card>
             ) : selectedLoan ? (
               <div>
@@ -315,12 +311,20 @@ export default function AccountPage() {
                         </button>
                       )}
                       {selectedLoan.status === 'active' && (
-                        <button
-                          onClick={() => setShowPaymentModal(true)}
-                          className="px-6 py-2.5 rounded-full border border-[#5F5247] text-[#5F5247] hover:bg-[#5F5247] hover:text-white transition font-medium"
-                        >
-                          💳 Заявка на оплату
-                        </button>
+                        <>
+                          <button
+                            onClick={() => setShowPaymentModal(true)}
+                            className="px-6 py-2.5 rounded-full border border-[#5F5247] text-[#5F5247] hover:bg-[#5F5247] hover:text-white transition font-medium"
+                          >
+                            💳 Заявка на оплату
+                          </button>
+                          <button
+                            onClick={() => setShowContractModal(true)}
+                            className="px-6 py-2.5 rounded-full border border-[#5F5247] text-[#5F5247] hover:bg-[#5F5247] hover:text-white transition font-medium"
+                          >
+                            📄 Просмотр договора
+                          </button>
+                        </>
                       )}
                     </div>
                   </Card>
@@ -349,6 +353,39 @@ export default function AccountPage() {
                                 <td className="py-3">
                                   <span className={`inline-block px-2 py-1 text-xs rounded-full ${getStatusColor(payment.status)}`}>
                                     {getStatusText(payment.status)}
+                                  </span>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </Card>
+
+                  {/* История платежей */}
+                  <Card className="p-6">
+                    <h3 className="text-xl font-semibold text-[#18181B] mb-4">История платежей</h3>
+                    {payments.filter(p => p.status === 'paid').length === 0 ? (
+                      <p className="text-[#71717A] text-center py-4">Нет оплаченных платежей</p>
+                    ) : (
+                      <div className="overflow-x-auto">
+                        <table className="w-full">
+                          <thead>
+                            <tr className="border-b border-[#E8E0D7]">
+                              <th className="text-left py-3 text-sm font-medium text-[#71717A]">Дата оплаты</th>
+                              <th className="text-left py-3 text-sm font-medium text-[#71717A]">Сумма</th>
+                              <th className="text-left py-3 text-sm font-medium text-[#71717A]">Статус</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {payments.filter(p => p.status === 'paid').map((payment) => (
+                              <tr key={payment.id} className="border-b border-[#E8E0D7]">
+                                <td className="py-3 text-sm">{payment.paid_at ? new Date(payment.paid_at).toLocaleDateString() : new Date(payment.due_date).toLocaleDateString()}</td>
+                                <td className="py-3 text-sm font-medium">{payment.amount} €</td>
+                                <td className="py-3">
+                                  <span className="inline-block px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">
+                                    Оплачен
                                   </span>
                                 </td>
                               </tr>
@@ -393,9 +430,7 @@ export default function AccountPage() {
                 <div className="text-5xl mb-4">📄</div>
                 <h3 className="text-xl font-semibold text-[#18181B] mb-2">У вас пока нет заявок</h3>
                 <p className="text-[#71717A] mb-6">Оставьте заявку на займ — это займёт всего несколько минут</p>
-                <Link href="/" className="inline-block px-8 py-3 rounded-full bg-[#5F5247] text-white hover:bg-[#7B6652] transition font-medium">
-                  Новая заявка
-                </Link>
+                <Link href="/" className="inline-block px-8 py-3 rounded-full bg-[#5F5247] text-white hover:bg-[#7B6652] transition font-medium">Новая заявка</Link>
               </Card>
             ) : (
               <div className="space-y-4">
@@ -529,6 +564,67 @@ export default function AccountPage() {
                   Отмена
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Contract Modal */}
+      {showContractModal && selectedLoan && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-3xl w-full max-h-[80vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-2xl font-bold text-[#18181B]">Договор займа</h3>
+              <button onClick={() => setShowContractModal(false)} className="text-[#71717A] hover:text-[#18181B] text-2xl">×</button>
+            </div>
+            <div className="space-y-4 text-[#71717A]">
+              <div className="text-center mb-6">
+                <h2 className="text-3xl font-bold text-[#18181B]">ДОГОВОР ЗАЙМА №{selectedLoan.id}</h2>
+                <p className="text-sm mt-2">г. Лондон</p>
+              </div>
+              <div className="border-t border-[#E8E0D7] pt-4">
+                <p><strong>Сумма займа:</strong> {selectedLoan.amount.toLocaleString()} €</p>
+                <p><strong>Процентная ставка:</strong> {selectedLoan.daily_rate * 100}% в день</p>
+                <p><strong>Срок займа:</strong> {selectedLoan.term} дней</p>
+                <p><strong>Ежедневный платёж:</strong> {selectedLoan.payment_amount} €</p>
+                <p><strong>Общая сумма к возврату:</strong> {selectedLoan.total_amount} €</p>
+              </div>
+              <div className="border-t border-[#E8E0D7] pt-4">
+                <p><strong>1. Предмет договора</strong></p>
+                <p>Заимодавец передаёт Заёмщику денежные средства в размере {selectedLoan.amount.toLocaleString()} €, а Заёмщик обязуется возвратить указанную сумму с процентами в установленный срок.</p>
+              </div>
+              <div className="border-t border-[#E8E0D7] pt-4">
+                <p><strong>2. Порядок погашения</strong></p>
+                <p>Погашение осуществляется ежедневно равными платежами в течение {selectedLoan.term} дней.</p>
+              </div>
+              <div className="border-t border-[#E8E0D7] pt-4">
+                <p><strong>3. Ответственность сторон</strong></p>
+                <p>За несвоевременное погашение займа Заёмщик несёт ответственность в соответствии с условиями договора.</p>
+              </div>
+              <div className="border-t border-[#E8E0D7] pt-4">
+                <p><strong>4. Подписи сторон</strong></p>
+                <div className="flex justify-between mt-8">
+                  <div>
+                    <p>Заимодавец: ______________</p>
+                    <p className="text-sm text-[#A0A0A0]">LumenBridge Finance Ltd</p>
+                  </div>
+                  <div>
+                    <p>Заёмщик: ______________</p>
+                    <p className="text-sm text-[#A0A0A0]">{user?.phone || 'Клиент'}</p>
+                  </div>
+                </div>
+                {selectedLoan.signed_at && (
+                  <p className="text-sm text-[#A0A0A0] mt-4">Подписан: {new Date(selectedLoan.signed_at).toLocaleDateString()}</p>
+                )}
+              </div>
+            </div>
+            <div className="mt-6 flex justify-end">
+              <button
+                onClick={() => setShowContractModal(false)}
+                className="px-6 py-2.5 rounded-full bg-[#5F5247] text-white hover:bg-[#7B6652] transition font-medium"
+              >
+                Закрыть
+              </button>
             </div>
           </div>
         </div>

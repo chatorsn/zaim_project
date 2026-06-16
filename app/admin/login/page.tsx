@@ -38,7 +38,7 @@ export default function AdminLogin() {
           <h1 className="text-3xl font-bold text-[#18181B]">LumenBridge</h1>
           <p className="text-[#71717A] mt-2">Вход в административную панель</p>
         </div>
-        <div className="bg-white border border-[#E8E0D7] rounded-2xl p-8">
+        <div className="bg-white border border-[#E8E0D7] rounded-2xl p-8 shadow-sm">
           {error && <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-red-600 text-sm text-center mb-6">{error}</div>}
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
@@ -49,7 +49,7 @@ export default function AdminLogin() {
               <label className="block text-[#71717A] text-sm mb-2">Пароль</label>
               <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-white border border-[#E8E0D7] rounded-xl p-3 focus:border-[#5F5247] outline-none" required />
             </div>
-            <button type="submit" disabled={loading} className="w-full bg-[#5F5247] text-white py-3 rounded-full font-medium hover:bg-[#7B6652] transition">
+            <button type="submit" disabled={loading} className="w-full bg-[#5F5247] text-white py-3 rounded-full font-medium hover:bg-[#7B6652] transition disabled:opacity-50">
               {loading ? 'Вход...' : 'Войти'}
             </button>
           </form>
