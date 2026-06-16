@@ -2,7 +2,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Button } from '@/shared/ui/Button';
 import { Card } from '@/shared/ui/Card';
 
 type Loan = {
@@ -55,6 +54,10 @@ export default function AccountPage() {
   const [otpSent, setOtpSent] = useState(false);
   const [signingLoading, setSigningLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [paymentAmount, setPaymentAmount] = useState('');
+  const [paymentReference, setPaymentReference] = useState('');
+  const [paymentLoading, setPaymentLoading] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -146,6 +149,34 @@ export default function AccountPage() {
       alert('Неверный код');
     }
     setSigningLoading(false);
+  };
+
+  const submitPaymentRequest = async () => {
+    if (!selectedLoan || !paymentAmount) {
+      alert('Введите сумму');
+      return;
+    }
+    setPaymentLoading(true);
+    const res = await fetch('/api/payment-request', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        loanId: selectedLoan.id,
+        userId: user?.id,
+        amount: parseFloat(paymentAmount),
+        reference: paymentReference
+      })
+    });
+    if (res.ok) {
+      setShowPaymentModal(false);
+      setPaymentAmount('');
+      setPaymentReference('');
+      setSuccessMessage('Заявка на оплату отправлена! Ожидайте подтверждения.');
+      setTimeout(() => setSuccessMessage(''), 5000);
+    } else {
+      alert('Ошибка при отправке заявки');
+    }
+    setPaymentLoading(false);
   };
 
   const logout = () => {
@@ -273,17 +304,25 @@ export default function AccountPage() {
                       <div><span className="text-[#71717A]">Платёж в день:</span> <span className="font-semibold">{selectedLoan.payment_amount} €</span></div>
                       <div className="col-span-2"><span className="text-[#71717A]">Итого к возврату:</span> <span className="font-semibold text-[#5F5247]">{selectedLoan.total_amount} €</span></div>
                     </div>
-                    {selectedLoan.status === 'pending_sign' && (
-                      <div className="mt-6 pt-4 border-t border-[#E8E0D7]">
+                    <div className="mt-6 pt-4 border-t border-[#E8E0D7] flex flex-wrap gap-3">
+                      {selectedLoan.status === 'pending_sign' && (
                         <button
                           onClick={requestOtp}
                           disabled={signingLoading}
-                          className="px-8 py-3 rounded-full bg-[#5F5247] text-white hover:bg-[#7B6652] transition font-medium disabled:opacity-50"
+                          className="px-6 py-2.5 rounded-full bg-[#5F5247] text-white hover:bg-[#7B6652] transition font-medium disabled:opacity-50"
                         >
                           {signingLoading ? 'Запрос кода...' : '✍️ Подписать договор'}
                         </button>
-                      </div>
-                    )}
+                      )}
+                      {selectedLoan.status === 'active' && (
+                        <button
+                          onClick={() => setShowPaymentModal(true)}
+                          className="px-6 py-2.5 rounded-full border border-[#5F5247] text-[#5F5247] hover:bg-[#5F5247] hover:text-white transition font-medium"
+                        >
+                          💳 Заявка на оплату
+                        </button>
+                      )}
+                    </div>
                   </Card>
 
                   <Card className="p-6">
@@ -445,6 +484,52 @@ export default function AccountPage() {
             >
               Отмена
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Payment Request Modal */}
+      {showPaymentModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full">
+            <h3 className="text-xl font-bold text-[#18181B] mb-4">Заявка на оплату</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-[#71717A] text-sm mb-1">Сумма (€)</label>
+                <input
+                  type="number"
+                  value={paymentAmount}
+                  onChange={(e) => setPaymentAmount(e.target.value)}
+                  className="w-full bg-white border border-[#E8E0D7] rounded-xl p-3 focus:border-[#5F5247] outline-none"
+                  placeholder="Введите сумму"
+                />
+              </div>
+              <div>
+                <label className="block text-[#71717A] text-sm mb-1">Реквизиты / Reference</label>
+                <input
+                  type="text"
+                  value={paymentReference}
+                  onChange={(e) => setPaymentReference(e.target.value)}
+                  className="w-full bg-white border border-[#E8E0D7] rounded-xl p-3 focus:border-[#5F5247] outline-none"
+                  placeholder="Номер перевода / IBAN"
+                />
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={submitPaymentRequest}
+                  disabled={paymentLoading}
+                  className="flex-1 px-4 py-2.5 rounded-full bg-[#5F5247] text-white hover:bg-[#7B6652] transition font-medium disabled:opacity-50"
+                >
+                  {paymentLoading ? 'Отправка...' : 'Отправить'}
+                </button>
+                <button
+                  onClick={() => setShowPaymentModal(false)}
+                  className="flex-1 px-4 py-2.5 rounded-full border border-[#E8E0D7] text-[#71717A] hover:bg-gray-50 transition"
+                >
+                  Отмена
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

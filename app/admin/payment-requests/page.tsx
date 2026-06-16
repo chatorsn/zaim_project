@@ -19,7 +19,8 @@ export default function AdminPaymentRequests() {
   const router = useRouter();
 
   useEffect(() => {
-    if (!localStorage.getItem('adminToken')) {
+    const token = localStorage.getItem('adminToken');
+    if (!token) {
       router.push('/admin/login');
       return;
     }
@@ -29,7 +30,7 @@ export default function AdminPaymentRequests() {
   const fetchRequests = async () => {
     const res = await fetch('/api/admin/payment-requests');
     const data = await res.json();
-    setRequests(data.requests || []);
+    if (data.success) setRequests(data.requests || []);
     setLoading(false);
   };
 
@@ -42,7 +43,9 @@ export default function AdminPaymentRequests() {
     fetchRequests();
   };
 
-  if (loading) return <div className="min-h-screen bg-[#F7F5F2] flex items-center justify-center">Загрузка...</div>;
+  if (loading) {
+    return <div className="min-h-screen bg-[#F7F5F2] flex items-center justify-center">Загрузка...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-[#F7F5F2]">
@@ -58,15 +61,18 @@ export default function AdminPaymentRequests() {
           {requests.length === 0 && <div className="text-center text-[#71717A] py-12">Нет заявок на оплату</div>}
           {requests.map((req) => (
             <div key={req.id} className="bg-white border border-[#E8E0D7] rounded-xl p-5">
-              <div className="flex justify-between items-start">
+              <div className="flex justify-between items-start flex-wrap gap-4">
                 <div>
                   <p className="text-2xl font-bold text-[#18181B]">{req.amount} €</p>
-                  <p className="text-[#71717A] text-sm mt-1">Заёмщик ID: {req.user_id}</p>
                   <p className="text-[#71717A] text-sm">Займ #{req.loan_id}</p>
+                  <p className="text-[#71717A] text-sm">Пользователь ID: {req.user_id}</p>
                   <p className="text-[#A0A0A0] text-xs mt-2">Reference: {req.reference || '—'}</p>
                 </div>
                 <div className="text-right">
-                  <p className={`text-sm font-medium px-3 py-1 rounded-full inline-block ${req.status === 'pending' ? 'bg-yellow-100 text-yellow-700' : req.status === 'approved' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                  <p className={`text-sm font-medium px-3 py-1 rounded-full inline-block ${
+                    req.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                    req.status === 'approved' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                  }`}>
                     {req.status === 'pending' ? 'Ожидает' : req.status === 'approved' ? 'Одобрена' : 'Отклонена'}
                   </p>
                   <p className="text-[#A0A0A0] text-xs mt-2">{new Date(req.created_at).toLocaleDateString()}</p>

@@ -1,61 +1,94 @@
 import { NextResponse } from 'next/server';
-import { Pool } from 'pg';
+import { query } from '@/lib/db';
 
-const pool = new Pool({
-  host: 'localhost',
-  port: 5432,
-  user: 'postgres',
-  password: 'postgres',
-  database: 'lumen_db',
-});
+// (если у тебя есть auth — сюда можно добавить проверку токена)
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
-    const client = await pool.connect();
-    const result = await client.query(`
+    const result = await query(`
       SELECT a.*, u.phone, u.name as user_name 
       FROM applications a 
       LEFT JOIN users u ON a.user_id = u.id 
       ORDER BY a.created_at DESC
     `);
-    client.release();
-    return NextResponse.json({ success: true, applications: result.rows });
+
+    return NextResponse.json({
+      success: true,
+      applications: result.rows,
+    });
   } catch (error) {
-    return NextResponse.json({ success: false, error: 'Database error' }, { status: 500 });
+    console.error(error);
+    return NextResponse.json(
+      { success: false, error: 'Database error' },
+      { status: 500 }
+    );
   }
 }
 
 export async function PUT(req: Request) {
   try {
     const { id, status } = await req.json();
-    const client = await pool.connect();
-    
-    await client.query('UPDATE applications SET status = $1 WHERE id = $2', [status, id]);
-    
-    // Если заявка одобрена, создаём займ
+
+    if (!id || !status) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid request' },
+        { status: 400 }
+      );
+    }
+
+    const result = await query(
+      `UPDATE applications SET status = $1 WHERE id = $2 RETURNING *`,
+      [status, id]
+    );
+
+    if (!result.rows.length) {
+      return NextResponse.json(
+        { success: false, error: 'Application not found' },
+        { status: 404 }
+      );
+    }
+
+    const app = result.rows[0];
+
+    // если одобрено — создаём займ
     if (status === 'approved') {
-      const app = await client.query('SELECT * FROM applications WHERE id = $1', [id]);
-      const application = app.rows[0];
-      
       const dailyRate = 0.008;
       const r = dailyRate;
-      const n = application.term;
-      const P = Number(application.amount);
+      const n = app.term;
+      const P = Number(app.amount);
+
       const pow = Math.pow(1 + r, n);
       const payment = P * (r * pow) / (pow - 1);
       const total = payment * n;
-      
-      await client.query(
-        `INSERT INTO loans (application_id, user_id, amount, term, daily_rate, payment_amount, total_amount, status)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, 'pending_sign')`,
-        [application.id, application.user_id, application.amount, application.term, dailyRate, payment, total]
+
+      await query(
+        `INSERT INTO loans 
+        (application_id, user_id, amount, term, daily_rate, payment_amount, total_amount, status)
+        VALUES ($1,$2,$3,$4,$5,$6,$7,'pending_sign')`,
+        [app.id, app.user_id, app.amount, app.term, dailyRate, payment, total]
+      );
+
+      await query(
+        `INSERT INTO notifications (user_id, title, message)
+         VALUES ($1,$2,$3)`,
+        [
+          app.user_id,
+          'Заявка одобрена',
+          `Ваша заявка на ${app.amount} € одобрена.`,
+        ]
       );
     }
-    
-    client.release();
-    return NextResponse.json({ success: true });
+
+    return NextResponse.json({
+      success: true,
+      application: app,
+    });
   } catch (error) {
     console.error('PUT error:', error);
-    return NextResponse.json({ success: false, error: 'Update failed' }, { status: 500 });
+
+    return NextResponse.json(
+      { success: false, error: 'Update failed' },
+      { status: 500 }
+    );
   }
 }
