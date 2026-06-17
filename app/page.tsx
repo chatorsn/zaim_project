@@ -35,9 +35,9 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#ece6e3]">
       <header className="fixed top-0 left-0 right-0 z-50 bg-[#2c3943] border-b border-[#3d4f5c]">
-        <div className="max-w-7xl mx-auto px-8 py-5 flex justify-between items-center">
-          <Link href="/" className="text-2xl font-medium text-white tracking-tight">LumenBridge</Link>
-          <nav className="hidden md:flex gap-10 text-sm text-[#b7c0c7]">
+        <div className="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
+          <Link href="/" className="text-xl font-medium text-white tracking-tight">LumenBridge</Link>
+          <nav className="hidden md:flex gap-8 text-sm text-[#b7c0c7]">
             <Link href="/about" className="hover:text-white transition">О компании</Link>
             <Link href="/how-it-works" className="hover:text-white transition">Как работает</Link>
             <Link href="/for-business" className="hover:text-white transition">Для бизнеса</Link>
@@ -45,19 +45,17 @@ export default function Home() {
             <Link href="/contacts" className="hover:text-white transition">Контакты</Link>
           </nav>
           {userId ? (
-            <Link href="/account" className="text-sm text-white border border-[#4a5c6a] px-6 py-2 rounded-full hover:bg-white hover:text-[#2c3943] transition">Личный кабинет</Link>
+            <Link href="/account" className="text-sm text-white border border-[#4a5c6a] px-5 py-1.5 rounded-full hover:bg-white hover:text-[#2c3943] transition">Личный кабинет</Link>
           ) : (
-            <Link href="/login" className="text-sm text-white border border-[#4a5c6a] px-6 py-2 rounded-full hover:bg-white hover:text-[#2c3943] transition">Войти</Link>
+            <Link href="/login" className="text-sm text-white border border-[#4a5c6a] px-5 py-1.5 rounded-full hover:bg-white hover:text-[#2c3943] transition">Войти</Link>
           )}
         </div>
       </header>
 
       <main>
-        {/* HERO - БЛОК УСЛОВИЙ ТЕПЕРЬ НА 80px НИЖЕ */}
-        <section className="pt-40 pb-32 px-8">
+        <section className="pt-32 pb-32 px-8">
           <div className="max-w-7xl mx-auto">
             <div className="grid lg:grid-cols-[1fr_1fr] gap-20">
-              {/* Левая колонка */}
               <div>
                 <div className="flex items-center gap-3 mb-8">
                   <span className="w-8 h-px bg-[#2c3943]" />
@@ -85,7 +83,6 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Правая колонка - СДВИНУТА ВНИЗ НА 80px */}
               <div className="bg-white rounded-3xl p-12 lg:p-14 shadow-[0_10px_30px_rgba(0,0,0,0.04)] mt-20">
                 <div className="flex justify-between items-center mb-6">
                   <span className="text-xs tracking-[0.25em] uppercase text-[#77726f]">Условия займа</span>
@@ -124,7 +121,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ====== КАЛЬКУЛЯТОР ====== */}
         <section className="py-32 px-8 bg-white border-t border-[#e5d4ca]">
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-16">
@@ -188,7 +184,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ====== УСЛОВИЯ ЗАЙМА ====== */}
         <section className="py-32 px-8">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
@@ -214,7 +209,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ====== КОГДА ДЕНЬГИ НУЖНЫ СЕЙЧАС ====== */}
         <section className="py-32 px-8 bg-[#ece6e3] border-t border-[#e5d4ca]">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
@@ -241,7 +235,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ====== КАК ЭТО РАБОТАЕТ ====== */}
         <section className="py-32 px-8 bg-white border-t border-[#e5d4ca]">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
@@ -253,14 +246,43 @@ export default function Home() {
             </div>
             <div className="grid md:grid-cols-3 gap-8">
               {[
-                { num: '01', title: 'Регистрация', desc: 'Введите номер телефона и подтвердите его с помощью SMS-кода.' },
-                { num: '02', title: 'Заявка', desc: 'Выберите сумму и срок займа и отправьте заявку на рассмотрение.' },
-                { num: '03', title: 'Получение средств', desc: 'После одобрения деньги поступают на ваш банковский счёт.' }
+                { 
+                  num: '01', 
+                  title: 'Регистрация', 
+                  desc: 'Введите номер телефона и подтвердите его с помощью SMS-кода.',
+                  icon: (
+                    <svg className="w-8 h-8 text-[#2c3943]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                  )
+                },
+                { 
+                  num: '02', 
+                  title: 'Заявка', 
+                  desc: 'Выберите сумму и срок займа и отправьте заявку на рассмотрение.',
+                  icon: (
+                    <svg className="w-8 h-8 text-[#2c3943]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  )
+                },
+                { 
+                  num: '03', 
+                  title: 'Получение средств', 
+                  desc: 'После одобрения деньги поступают на ваш банковский счёт.',
+                  icon: (
+                    <svg className="w-8 h-8 text-[#2c3943]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  )
+                }
               ].map((item) => (
                 <div key={item.num} className="bg-[#ece6e3] rounded-3xl p-10 relative overflow-hidden">
-                  <span className="absolute right-6 bottom-2 text-8xl font-medium text-[#2c3943]/10 pointer-events-none select-none leading-none">{item.num}</span>
+                  <span className="absolute right-6 bottom-2 text-8xl font-medium text-[#2c3943]/5 pointer-events-none select-none leading-none">{item.num}</span>
                   <div className="relative">
-                    <div className="w-12 h-12 bg-[#2c3943] rounded-2xl mb-6" />
+                    <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm">
+                      {item.icon}
+                    </div>
                     <h3 className="text-2xl font-medium text-[#2c3943] mb-3">{item.title}</h3>
                     <p className="text-[#77726f] leading-relaxed">{item.desc}</p>
                   </div>
@@ -270,7 +292,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ====== ПРОЗРАЧНЫЕ УСЛОВИЯ + КРЕДИТНАЯ ИСТОРИЯ ====== */}
         <section className="py-32 px-8 bg-[#ece6e3] border-t border-[#e5d4ca]">
           <div className="max-w-7xl mx-auto">
             <div className="grid lg:grid-cols-[1fr_440px] gap-20 items-start">
@@ -320,7 +341,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ====== CTA + ФОРМА ====== */}
         <section className="py-32 px-8 bg-white border-t border-[#e5d4ca]">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-12">
@@ -333,7 +353,6 @@ export default function Home() {
             </div>
           </div>
         </section>
-
       </main>
 
       <footer className="bg-[#2c3943] text-white py-16 px-8 border-t border-[#3d4f5c]">
