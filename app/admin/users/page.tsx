@@ -29,27 +29,27 @@ export default function AdminUsers() {
       });
   }, []);
 
-  if (loading) return <div className="min-h-screen bg-[#F7F5F2] flex items-center justify-center">Загрузка...</div>;
+  if (loading) return <div className="min-h-screen bg-[#ece6e3] flex items-center justify-center text-[#2c3943]">Загрузка...</div>;
 
   return (
-    <div className="min-h-screen bg-[#F7F5F2]">
-      <header className="bg-white border-b border-[#E8E0D7] px-6 py-4 flex justify-between items-center">
+    <div className="min-h-screen bg-[#ece6e3]">
+      <header className="bg-[#2c3943] border-b border-[#3d4f5c] px-6 py-4 flex justify-between items-center">
         <div className="flex items-center gap-4">
-          <Link href="/admin/dashboard" className="text-[#71717A] hover:text-[#5F5247]">← Назад</Link>
-          <h1 className="text-xl font-semibold text-[#18181B]">Клиенты</h1>
+          <Link href="/admin/dashboard" className="text-sm text-[#9dabb4] hover:text-[#ece6e3] transition">← Назад</Link>
+          <h1 className="text-xl font-medium text-[#ece6e3]">Клиенты</h1>
         </div>
-        <button onClick={() => { localStorage.clear(); router.push('/admin/login'); }} className="text-[#71717A] hover:text-red-500">Выйти</button>
+        <button onClick={() => { localStorage.removeItem('adminToken'); localStorage.removeItem('adminRole'); router.push('/admin/login'); }} className="text-sm text-[#9dabb4] hover:text-[#ece6e3] transition">Выйти</button>
       </header>
-      <main className="p-6">
-        <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-4">
-          {users.length === 0 && <div className="text-center text-[#71717A] py-12 col-span-2">Нет клиентов</div>}
+      <main className="p-8 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-4">
+          {users.length === 0 && <div className="text-center text-[#77726f] py-12 col-span-2">Нет клиентов</div>}
           {users.map((user) => (
-            <div key={user.id} className="bg-white border border-[#E8E0D7] rounded-xl p-4">
+            <div key={user.id} className="bg-white border border-[#e5d4ca] rounded-2xl p-5 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-[#5F5247] rounded-full flex items-center justify-center text-white font-bold">{user.name?.[0] || user.phone?.[0]}</div>
+                <div className="w-10 h-10 bg-[#2c3943] rounded-full flex items-center justify-center text-white font-medium text-sm">{user.name?.[0] || user.phone?.[0]}</div>
                 <div>
-                  <p className="font-medium text-[#18181B]">{user.name || user.phone}</p>
-                  <p className="text-[#71717A] text-sm">{user.phone}</p>
+                  <p className="font-medium text-[#2c3943]">{user.name || user.phone}</p>
+                  <p className="text-sm text-[#77726f]">{user.phone}</p>
                 </div>
               </div>
             </div>

@@ -18,14 +18,10 @@ export default function AdminApplications() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState<number | null>(null);
-  const [role, setRole] = useState<string>('');
   const router = useRouter();
 
   useEffect(() => {
     const token = localStorage.getItem('adminToken');
-    const userRole = localStorage.getItem('adminRole') || '';
-    setRole(userRole);
-    
     if (!token) {
       router.push('/admin/login');
       return;
@@ -56,63 +52,61 @@ export default function AdminApplications() {
   };
 
   if (loading) {
-    return <div className="min-h-screen bg-[#F7F5F2] flex items-center justify-center">Загрузка...</div>;
+    return <div className="min-h-screen bg-[#ece6e3] flex items-center justify-center">Загрузка...</div>;
   }
 
-  const isAdmin = role === 'admin';
-
   return (
-    <div className="min-h-screen bg-[#F7F5F2]">
-      <header className="bg-white border-b border-[#E8E0D7] px-6 py-4 flex justify-between items-center">
+    <div className="min-h-screen bg-[#ece6e3]">
+      <header className="bg-[#2c3943] border-b border-[#3d4f5c] px-6 py-4 flex justify-between items-center">
         <div className="flex items-center gap-4">
-          <Link href="/admin/dashboard" className="text-[#71717A] hover:text-[#5F5247]">← Назад</Link>
-          <h1 className="text-xl font-semibold text-[#18181B]">Заявки</h1>
-          <span className={`text-xs px-3 py-1 rounded-full ${isAdmin ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
-            {isAdmin ? 'Администратор' : 'Оператор'}
-          </span>
+          <Link href="/admin/dashboard" className="text-sm text-[#9dabb4] hover:text-[#ece6e3] transition">← Назад</Link>
+          <h1 className="text-xl font-medium text-[#ece6e3]">Заявки</h1>
         </div>
-        <button onClick={() => { localStorage.clear(); router.push('/admin/login'); }} className="text-[#71717A] hover:text-red-500">Выйти</button>
+        <button onClick={() => { localStorage.clear(); router.push('/admin/login'); }} className="text-sm text-[#9dabb4] hover:text-[#ece6e3] transition">Выйти</button>
       </header>
 
-      <main className="p-6">
-        <div className="max-w-4xl mx-auto space-y-4">
-          {applications.length === 0 && <div className="text-center text-[#71717A] py-12">Нет заявок</div>}
+      <main className="p-8 max-w-6xl mx-auto">
+        <div className="space-y-4">
+          {applications.length === 0 && <div className="text-center text-[#77726f] py-12">Нет заявок</div>}
           {applications.map((app) => (
-            <div key={app.id} className="bg-white border border-[#E8E0D7] rounded-xl p-5 shadow-sm">
+            <div key={app.id} className="bg-white border border-[#e5d4ca] rounded-2xl p-6 shadow-sm">
               <div className="flex justify-between items-start flex-wrap gap-4">
                 <div>
-                  <p className="text-2xl font-bold text-[#18181B]">{Number(app.amount).toLocaleString()} €</p>
-                  <p className="text-[#71717A] text-sm mt-1">Срок: {app.term} дней</p>
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="text-sm text-[#9dabb4]">#{app.id}</span>
+                    <span className={`text-xs px-3 py-1 rounded-full ${
+                      app.status === 'new' ? 'bg-[#ece6e3] text-[#2c3943]' :
+                      app.status === 'approved' ? 'bg-[#e5d4ca] text-[#2c3943]' : 'bg-[#e5d4ca] text-[#2c3943]'
+                    }`}>
+                      {app.status === 'new' ? 'Новая' : app.status === 'approved' ? 'Одобрена' : 'Отклонена'}
+                    </span>
+                  </div>
+                  <p className="text-2xl font-medium text-[#2c3943]">{Number(app.amount).toLocaleString()} €</p>
+                  <p className="text-sm text-[#77726f] mt-1">Срок: {app.term} дней</p>
+                  <div className="mt-4 pt-4 border-t border-[#e5d4ca]">
+                    <p className="text-sm text-[#2c3943]">{app.user_name || `Пользователь ${app.user_id}`}</p>
+                    <p className="text-xs text-[#9dabb4]">{app.phone}</p>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <span className={`inline-block px-3 py-1 rounded-full text-sm ${
-                    app.status === 'new' ? 'bg-yellow-100 text-yellow-700' :
-                    app.status === 'approved' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                  }`}>
-                    {app.status === 'new' ? 'Новая' : app.status === 'approved' ? 'Одобрена' : 'Отклонена'}
-                  </span>
-                  <p className="text-[#71717A] text-sm mt-2">{app.user_name || `Пользователь ${app.user_id}`}</p>
-                  <p className="text-[#A0A0A0] text-xs">{app.phone}</p>
-                </div>
+                {app.status === 'new' && (
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => updateStatus(app.id, 'approved')}
+                      disabled={updating === app.id}
+                      className="bg-[#2c3943] text-[#ece6e3] px-5 py-2 rounded-xl text-sm hover:bg-[#3d4f5c] transition disabled:opacity-50"
+                    >
+                      {updating === app.id ? '...' : 'Одобрить'}
+                    </button>
+                    <button
+                      onClick={() => updateStatus(app.id, 'rejected')}
+                      disabled={updating === app.id}
+                      className="border border-[#e5d4ca] text-[#2c3943] px-5 py-2 rounded-xl text-sm hover:bg-[#ece6e3] transition disabled:opacity-50"
+                    >
+                      Отклонить
+                    </button>
+                  </div>
+                )}
               </div>
-              {app.status === 'new' && (
-                <div className="flex gap-3 mt-4">
-                  <button
-                    onClick={() => updateStatus(app.id, 'approved')}
-                    disabled={updating === app.id}
-                    className="bg-[#5F5247] text-white px-5 py-2 rounded-xl hover:bg-[#7B6652] transition disabled:opacity-50"
-                  >
-                    {updating === app.id ? '...' : 'Одобрить'}
-                  </button>
-                  <button
-                    onClick={() => updateStatus(app.id, 'rejected')}
-                    disabled={updating === app.id}
-                    className="border border-red-500 text-red-500 px-5 py-2 rounded-xl hover:bg-red-50 transition disabled:opacity-50"
-                  >
-                    Отклонить
-                  </button>
-                </div>
-              )}
             </div>
           ))}
         </div>

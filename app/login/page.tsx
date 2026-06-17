@@ -47,38 +47,38 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F5F2] flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#ece6e3] flex items-center justify-center px-4">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
-          <Link href="/" className="text-2xl font-semibold text-[#18181B] tracking-tight">LumenBridge</Link>
-          <p className="text-[#71717A] mt-2">Вход в личный кабинет</p>
+          <h1 className="text-3xl font-medium text-[#2c3943]">LumenBridge</h1>
+          <p className="text-sm text-[#77726f] mt-2">Вход в личный кабинет</p>
         </div>
-        <div className="bg-white border border-[#E8E0D7] rounded-2xl p-8 shadow-sm">
+        <div className="bg-white border border-[#e5d4ca] rounded-2xl p-8 shadow-sm">
           {error && <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-red-600 text-sm text-center mb-6">{error}</div>}
           {step === 'phone' ? (
             <div className="space-y-4">
               <div>
-                <label className="block text-[#71717A] text-sm mb-2">Номер телефона</label>
-                <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full bg-white border border-[#E8E0D7] rounded-xl p-3 focus:border-[#5F5247] outline-none" placeholder="+7 999 123-45-67" />
+                <label className="block text-sm text-[#77726f] mb-2">Номер телефона</label>
+                <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full" placeholder="+7 999 123-45-67" />
               </div>
-              <button onClick={sendCode} disabled={loading} className="w-full bg-[#5F5247] text-white py-3 rounded-full font-medium hover:bg-[#7B6652] transition disabled:opacity-50">
+              <button onClick={sendCode} disabled={loading} className="w-full bg-[#2c3943] text-[#ece6e3] py-3 rounded-full text-sm font-medium hover:bg-[#3d4f5c] transition disabled:opacity-50">
                 {loading ? 'Отправка...' : 'Получить код'}
               </button>
             </div>
           ) : (
             <div className="space-y-4">
-              <p className="text-[#71717A] text-sm text-center">Код отправлен на {phone}</p>
+              <p className="text-sm text-[#77726f] text-center">Код отправлен на {phone}</p>
               <div>
-                <label className="block text-[#71717A] text-sm mb-2">Код из SMS</label>
-                <input type="text" value={code} onChange={(e) => setCode(e.target.value)} className="w-full bg-white border border-[#E8E0D7] rounded-xl p-3 focus:border-[#5F5247] outline-none" placeholder="000000" />
+                <label className="block text-sm text-[#77726f] mb-2">Код из SMS</label>
+                <input type="text" value={code} onChange={(e) => setCode(e.target.value)} className="w-full" placeholder="000000" />
               </div>
-              <button onClick={verifyCode} disabled={loading} className="w-full bg-[#5F5247] text-white py-3 rounded-full font-medium hover:bg-[#7B6652] transition disabled:opacity-50">
+              <button onClick={verifyCode} disabled={loading} className="w-full bg-[#2c3943] text-[#ece6e3] py-3 rounded-full text-sm font-medium hover:bg-[#3d4f5c] transition disabled:opacity-50">
                 {loading ? 'Проверка...' : 'Войти'}
               </button>
             </div>
           )}
           <div className="mt-6 text-center">
-            <Link href="/" className="text-[#71717A] text-sm hover:text-[#5F5247] transition">← Вернуться на главную</Link>
+            <Link href="/" className="text-sm text-[#9dabb4] hover:text-[#2c3943] transition">← Вернуться на главную</Link>
           </div>
         </div>
       </div>

@@ -32,35 +32,47 @@ export default function AdminLoans() {
   }, []);
 
   const getStatus = (s: string) => {
-    const map: Record<string, string> = { pending_sign: 'Ожидает подписания', active: 'Активен', completed: 'Закрыт', defaulted: 'Просрочен' };
+    const map: Record<string, string> = { 
+      pending_sign: 'Ожидает подписания', 
+      active: 'Активен', 
+      completed: 'Закрыт', 
+      defaulted: 'Просрочен' 
+    };
     return map[s] || s;
   };
 
-  if (loading) return <div className="min-h-screen bg-[#F7F5F2] flex items-center justify-center">Загрузка...</div>;
+  if (loading) return <div className="min-h-screen bg-[#ece6e3] flex items-center justify-center text-[#2c3943]">Загрузка...</div>;
 
   return (
-    <div className="min-h-screen bg-[#F7F5F2]">
-      <header className="bg-white border-b border-[#E8E0D7] px-6 py-4 flex justify-between items-center">
+    <div className="min-h-screen bg-[#ece6e3]">
+      <header className="bg-[#2c3943] border-b border-[#3d4f5c] px-6 py-4 flex justify-between items-center">
         <div className="flex items-center gap-4">
-          <Link href="/admin/dashboard" className="text-[#71717A] hover:text-[#5F5247]">← Назад</Link>
-          <h1 className="text-xl font-semibold text-[#18181B]">Займы</h1>
+          <Link href="/admin/dashboard" className="text-sm text-[#9dabb4] hover:text-[#ece6e3] transition">← Назад</Link>
+          <h1 className="text-xl font-medium text-[#ece6e3]">Займы</h1>
         </div>
-        <button onClick={() => { localStorage.clear(); router.push('/admin/login'); }} className="text-[#71717A] hover:text-red-500">Выйти</button>
+        <button onClick={() => { localStorage.removeItem('adminToken'); localStorage.removeItem('adminRole'); router.push('/admin/login'); }} className="text-sm text-[#9dabb4] hover:text-[#ece6e3] transition">Выйти</button>
       </header>
-      <main className="p-6">
-        <div className="max-w-3xl mx-auto space-y-4">
-          {loans.length === 0 && <div className="text-center text-[#71717A] py-12">Нет займов</div>}
+      <main className="p-8 max-w-6xl mx-auto">
+        <div className="space-y-4">
+          {loans.length === 0 && <div className="text-center text-[#77726f] py-12">Нет займов</div>}
           {loans.map((loan) => (
-            <div key={loan.id} className="bg-white border border-[#E8E0D7] rounded-xl p-5">
-              <div className="flex justify-between items-start">
+            <div key={loan.id} className="bg-white border border-[#e5d4ca] rounded-2xl p-6 shadow-sm">
+              <div className="flex justify-between items-start flex-wrap gap-4">
                 <div>
-                  <p className="text-2xl font-bold text-[#18181B]">{Number(loan.amount).toLocaleString()} €</p>
-                  <p className="text-[#71717A] text-sm mt-1">Срок: {loan.term} дней</p>
-                  <p className="text-[#71717A] text-xs">Платёж: {loan.payment_amount} €</p>
+                  <p className="text-2xl font-medium text-[#2c3943]">{Number(loan.amount).toLocaleString()} €</p>
+                  <p className="text-sm text-[#77726f] mt-1">Срок: {loan.term} дней</p>
+                  <p className="text-sm text-[#77726f]">Платёж: {loan.payment_amount} €</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-medium">{getStatus(loan.status)}</p>
-                  <p className="text-[#71717A] text-xs mt-1">ID заёмщика: {loan.user_id}</p>
+                  <span className={`text-xs px-3 py-1 rounded-full ${
+                    loan.status === 'active' ? 'bg-[#dce9df] text-[#2c3943]' :
+                    loan.status === 'completed' ? 'bg-[#ece6e3] text-[#2c3943]' :
+                    loan.status === 'defaulted' ? 'bg-[#f1dddd] text-[#2c3943]' :
+                    'bg-[#ece6e3] text-[#2c3943]'
+                  }`}>
+                    {getStatus(loan.status)}
+                  </span>
+                  <p className="text-xs text-[#9dabb4] mt-2">ID заёмщика: {loan.user_id}</p>
                 </div>
               </div>
             </div>

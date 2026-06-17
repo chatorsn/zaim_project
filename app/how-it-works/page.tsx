@@ -2,32 +2,28 @@ import Link from 'next/link';
 
 export default function HowItWorks() {
   return (
-    <div className="min-h-screen bg-[#F7F5F2]">
-      <header className="bg-white border-b border-[#E8E0D7] sticky top-0 z-50 px-6 py-4">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <Link href="/" className="text-2xl font-semibold text-[#18181B]">LumenBridge</Link>
-          <Link href="/" className="text-[#71717A] hover:text-[#5F5247] transition">На главную</Link>
+    <div className="min-h-screen bg-[#ece6e3]">
+      <header className="bg-[#2c3943] border-b border-[#3d4f5c] sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+          <Link href="/" className="text-xl font-medium text-[#ece6e3]">LumenBridge</Link>
+          <Link href="/" className="text-sm text-[#9dabb4] hover:text-[#ece6e3] transition">На главную</Link>
         </div>
       </header>
       <main className="max-w-4xl mx-auto px-6 py-12">
-        <div className="bg-white border border-[#E8E0D7] rounded-2xl p-8 shadow-sm">
-          <h1 className="text-4xl font-bold text-[#18181B] mb-6">Как работает сервис</h1>
-          <div className="space-y-8">
-            <div>
-              <div className="text-3xl font-bold text-[#5F5247] mb-2">01</div>
-              <h2 className="text-xl font-semibold mb-2">Регистрация</h2>
-              <p className="text-[#71717A]">Введите номер телефона и подтвердите его с помощью SMS-кода.</p>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-[#5F5247] mb-2">02</div>
-              <h2 className="text-xl font-semibold mb-2">Заявка</h2>
-              <p className="text-[#71717A]">Выберите сумму и срок займа, отправьте заявку.</p>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-[#5F5247] mb-2">03</div>
-              <h2 className="text-xl font-semibold mb-2">Получение средств</h2>
-              <p className="text-[#71717A]">После одобрения деньги поступают на ваш счёт.</p>
-            </div>
+        <div className="bg-white border border-[#e5d4ca] rounded-2xl p-8 shadow-sm">
+          <h1 className="text-3xl font-medium text-[#2c3943] mb-6">Как работает сервис</h1>
+          <div className="space-y-6">
+            {[
+              { num: '01', title: 'Регистрация', desc: 'Введите номер телефона и подтвердите его с помощью SMS-кода.' },
+              { num: '02', title: 'Заявка', desc: 'Выберите сумму и срок займа, отправьте заявку на рассмотрение.' },
+              { num: '03', title: 'Получение средств', desc: 'После одобрения деньги поступают на ваш банковский счёт.' }
+            ].map((item) => (
+              <div key={item.num} className="border-b border-[#e5d4ca] pb-6 last:border-0">
+                <div className="text-2xl font-medium text-[#9dabb4] mb-2">{item.num}</div>
+                <h2 className="text-xl font-medium text-[#2c3943] mb-2">{item.title}</h2>
+                <p className="text-sm text-[#77726f]">{item.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
       </main>

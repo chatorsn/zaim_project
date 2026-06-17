@@ -2,7 +2,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Card } from '@/shared/ui/Card';
 
 type Loan = {
   id: number;
@@ -29,7 +28,6 @@ type Payment = {
   amount: number;
   paid_amount: number;
   status: string;
-  paid_at: string;
 };
 
 type Notification = {
@@ -59,7 +57,6 @@ export default function AccountPage() {
   const [paymentAmount, setPaymentAmount] = useState('');
   const [paymentReference, setPaymentReference] = useState('');
   const [paymentLoading, setPaymentLoading] = useState(false);
-  const [showContractModal, setShowContractModal] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -143,7 +140,7 @@ export default function AccountPage() {
       setShowOtpModal(false);
       setOtpCode('');
       setOtpSent(false);
-      setSuccessMessage('Договор успешно подписан! Займ активирован.');
+      setSuccessMessage('Договор подписан! Займ активирован.');
       setTimeout(() => setSuccessMessage(''), 5000);
       if (user?.id) fetchData(user.id);
       setSelectedLoan(null);
@@ -191,20 +188,8 @@ export default function AccountPage() {
     setNotifications(notifications.map(n => n.id === id ? { ...n, is_read: true } : n));
   };
 
-  const getStatusText = (status: string) => {
-    if (status === 'paid') return 'Оплачен';
-    if (status === 'overdue') return 'Просрочен';
-    return 'Ожидает';
-  };
-
-  const getStatusColor = (status: string) => {
-    if (status === 'paid') return 'bg-green-100 text-green-700';
-    if (status === 'overdue') return 'bg-red-100 text-red-700';
-    return 'bg-yellow-100 text-yellow-700';
-  };
-
   if (loading) {
-    return <div className="min-h-screen bg-gradient-to-br from-[#F7F5F2] via-[#F5F2EE] to-[#EFE8DF] flex items-center justify-center">Загрузка...</div>;
+    return <div className="min-h-screen bg-[#ece6e3] flex items-center justify-center">Загрузка...</div>;
   }
 
   const activeLoans = loans.filter(l => l.status === 'active').length;
@@ -213,146 +198,128 @@ export default function AccountPage() {
   const unreadCount = notifications.filter(n => !n.is_read).length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#F7F5F2] via-[#F5F2EE] to-[#EFE8DF]">
-      <header className="bg-white/95 backdrop-blur-sm border-b border-[#E8E0D7] sticky top-0 z-10">
+    <div className="min-h-screen bg-[#ece6e3]">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-[#2c3943] border-b border-[#3d4f5c]">
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex justify-between items-center">
-          <Link href="/" className="text-xl md:text-2xl font-semibold text-[#18181B] tracking-tight">LumenBridge</Link>
+          <Link href="/" className="text-xl font-medium text-[#ece6e3] tracking-tight">LumenBridge</Link>
           <div className="flex gap-3">
-            <Link href="/" className="px-5 py-2.5 rounded-full border border-[#5F5247] text-[#5F5247] hover:bg-[#5F5247] hover:text-white transition text-sm font-medium">На главную</Link>
-            <button onClick={logout} className="px-5 py-2.5 rounded-full bg-[#5F5247] text-white hover:bg-[#7B6652] transition text-sm font-medium">Выйти</button>
+            <Link href="/" className="px-5 py-2 rounded-full border border-[#4a5c6a] text-[#9dabb4] hover:bg-[#3d4f5c] hover:text-[#ece6e3] transition text-sm">На главную</Link>
+            <button onClick={logout} className="px-5 py-2 rounded-full bg-[#4a5c6a] text-[#ece6e3] hover:bg-[#3d4f5c] transition text-sm">Выйти</button>
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-12">
+      <main className="max-w-7xl mx-auto px-4 md:px-6 pt-24 pb-12">
         {successMessage && (
-          <div className="mb-6 p-4 bg-green-100 border border-green-300 rounded-xl text-green-700 text-center">
+          <div className="mb-6 p-4 bg-green-100 border border-green-300 rounded-xl text-green-700 text-sm text-center">
             {successMessage}
           </div>
         )}
 
         <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-[#18181B] mb-2">Личный кабинет</h1>
-          <p className="text-[#71717A]">Управляйте займами и отслеживайте статус заявок</p>
+          <h1 className="text-3xl font-medium text-[#2c3943]">Личный кабинет</h1>
+          <p className="text-sm text-[#77726f]">Управляйте займами и отслеживайте статус заявок</p>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <Card className="text-center p-4 md:p-5">
-            <p className="text-sm text-[#71717A] mb-1">Активные займы</p>
-            <p className="text-3xl font-bold text-[#5F5247]">{activeLoans}</p>
-          </Card>
-          <Card className="text-center p-4 md:p-5">
-            <p className="text-sm text-[#71717A] mb-1">Заявки</p>
-            <p className="text-3xl font-bold text-[#5F5247]">{applications.length}</p>
-          </Card>
-          <Card className="text-center p-4 md:p-5">
-            <p className="text-sm text-[#71717A] mb-1">На рассмотрении</p>
-            <p className="text-3xl font-bold text-orange-500">{pendingApps}</p>
-          </Card>
-          <Card className="text-center p-4 md:p-5">
-            <p className="text-sm text-[#71717A] mb-1">Одобрено</p>
-            <p className="text-3xl font-bold text-green-600">{approvedApps}</p>
-          </Card>
+          <div className="bg-white border border-[#e5d4ca] rounded-2xl p-5 text-center shadow-sm">
+            <p className="text-xs text-[#9dabb4] mb-1">Активные займы</p>
+            <p className="text-3xl font-medium text-[#2c3943]">{activeLoans}</p>
+          </div>
+          <div className="bg-white border border-[#e5d4ca] rounded-2xl p-5 text-center shadow-sm">
+            <p className="text-xs text-[#9dabb4] mb-1">Заявки</p>
+            <p className="text-3xl font-medium text-[#2c3943]">{applications.length}</p>
+          </div>
+          <div className="bg-white border border-[#e5d4ca] rounded-2xl p-5 text-center shadow-sm">
+            <p className="text-xs text-[#9dabb4] mb-1">На рассмотрении</p>
+            <p className="text-3xl font-medium text-orange-500">{pendingApps}</p>
+          </div>
+          <div className="bg-white border border-[#e5d4ca] rounded-2xl p-5 text-center shadow-sm">
+            <p className="text-xs text-[#9dabb4] mb-1">Одобрено</p>
+            <p className="text-3xl font-medium text-green-600">{approvedApps}</p>
+          </div>
         </div>
 
-        <div className="flex gap-2 mb-6 border-b border-[#E8E0D7]">
+        <div className="flex gap-2 mb-6 border-b border-[#e5d4ca]">
           <button
             onClick={() => { setActiveTab('loans'); setSelectedLoan(null); }}
-            className={`px-5 py-2 rounded-t-lg transition ${activeTab === 'loans' ? 'bg-white text-[#5F5247] border border-[#E8E0D7] border-b-white font-medium' : 'text-[#71717A] hover:text-[#5F5247]'}`}
+            className={`px-5 py-2 rounded-t-lg transition ${activeTab === 'loans' ? 'bg-white text-[#2c3943] border border-[#e5d4ca] border-b-white font-medium' : 'text-[#77726f] hover:text-[#2c3943]'}`}
           >
-            💰 Мои займы
+            Мои займы
           </button>
           <button
             onClick={() => { setActiveTab('applications'); setSelectedLoan(null); }}
-            className={`px-5 py-2 rounded-t-lg transition ${activeTab === 'applications' ? 'bg-white text-[#5F5247] border border-[#E8E0D7] border-b-white font-medium' : 'text-[#71717A] hover:text-[#5F5247]'}`}
+            className={`px-5 py-2 rounded-t-lg transition ${activeTab === 'applications' ? 'bg-white text-[#2c3943] border border-[#e5d4ca] border-b-white font-medium' : 'text-[#77726f] hover:text-[#2c3943]'}`}
           >
-            📄 Заявки
+            Заявки
           </button>
           <button
             onClick={() => setActiveTab('notifications')}
-            className={`px-5 py-2 rounded-t-lg transition ${activeTab === 'notifications' ? 'bg-white text-[#5F5247] border border-[#E8E0D7] border-b-white font-medium' : 'text-[#71717A] hover:text-[#5F5247]'}`}
+            className={`px-5 py-2 rounded-t-lg transition ${activeTab === 'notifications' ? 'bg-white text-[#2c3943] border border-[#e5d4ca] border-b-white font-medium' : 'text-[#77726f] hover:text-[#2c3943]'}`}
           >
-            🔔 Уведомления {unreadCount > 0 && `(${unreadCount})`}
+            Уведомления {unreadCount > 0 && `(${unreadCount})`}
           </button>
         </div>
 
+        {/* Контент табов */}
         {activeTab === 'loans' && (
           <div>
             {loans.length === 0 ? (
-              <Card className="text-center py-12">
+              <div className="bg-white border border-[#e5d4ca] rounded-2xl p-12 text-center shadow-sm">
                 <div className="text-5xl mb-4">📋</div>
-                <h3 className="text-xl font-semibold text-[#18181B] mb-2">У вас пока нет активных займов</h3>
-                <p className="text-[#71717A] mb-6">Создайте первую заявку и получите предварительное решение онлайн</p>
-                <Link href="/" className="inline-block px-8 py-3 rounded-full bg-[#5F5247] text-white hover:bg-[#7B6652] transition font-medium">Новая заявка</Link>
-              </Card>
+                <h3 className="text-xl font-medium text-[#2c3943] mb-2">У вас пока нет активных займов</h3>
+                <p className="text-sm text-[#77726f] mb-6">Создайте первую заявку и получите предварительное решение онлайн</p>
+                <Link href="/" className="inline-block px-8 py-3 rounded-full bg-[#2c3943] text-[#ece6e3] text-sm font-medium hover:bg-[#3d4f5c] transition">Новая заявка</Link>
+              </div>
             ) : selectedLoan ? (
               <div>
-                <button onClick={() => setSelectedLoan(null)} className="text-[#5F5247] mb-4 inline-flex items-center gap-1 hover:underline">
-                  ← Назад к списку
-                </button>
+                <button onClick={() => setSelectedLoan(null)} className="text-[#9dabb4] hover:text-[#2c3943] transition mb-4 text-sm">← Назад к списку</button>
                 <div className="space-y-6">
-                  <Card className="p-6">
-                    <h3 className="text-2xl font-bold text-[#18181B] mb-4">Детали займа</h3>
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div><span className="text-[#71717A]">Сумма:</span> <span className="font-semibold">{selectedLoan.amount.toLocaleString()} €</span></div>
-                      <div><span className="text-[#71717A]">Срок:</span> <span className="font-semibold">{selectedLoan.term} дней</span></div>
-                      <div><span className="text-[#71717A]">Ставка:</span> <span className="font-semibold">{selectedLoan.daily_rate * 100}% в день</span></div>
-                      <div><span className="text-[#71717A]">Платёж в день:</span> <span className="font-semibold">{selectedLoan.payment_amount} €</span></div>
-                      <div className="col-span-2"><span className="text-[#71717A]">Итого к возврату:</span> <span className="font-semibold text-[#5F5247]">{selectedLoan.total_amount} €</span></div>
+                  <div className="bg-white border border-[#e5d4ca] rounded-2xl p-6 shadow-sm">
+                    <h3 className="text-xl font-medium text-[#2c3943] mb-4">Детали займа</h3>
+                    <div className="grid md:grid-cols-2 gap-4 text-sm">
+                      <div><span className="text-[#77726f]">Сумма:</span> <span className="font-medium text-[#2c3943]">{selectedLoan.amount.toLocaleString()} €</span></div>
+                      <div><span className="text-[#77726f]">Срок:</span> <span className="font-medium text-[#2c3943]">{selectedLoan.term} дней</span></div>
+                      <div><span className="text-[#77726f]">Ставка:</span> <span className="font-medium text-[#2c3943]">{selectedLoan.daily_rate * 100}% в день</span></div>
+                      <div><span className="text-[#77726f]">Платёж в день:</span> <span className="font-medium text-[#2c3943]">{selectedLoan.payment_amount} €</span></div>
+                      <div className="col-span-2"><span className="text-[#77726f]">Итого к возврату:</span> <span className="font-medium text-[#2c3943]">{selectedLoan.total_amount} €</span></div>
                     </div>
-                    <div className="mt-6 pt-4 border-t border-[#E8E0D7] flex flex-wrap gap-3">
+                    <div className="mt-6 pt-4 border-t border-[#e5d4ca] flex flex-wrap gap-3">
                       {selectedLoan.status === 'pending_sign' && (
-                        <button
-                          onClick={requestOtp}
-                          disabled={signingLoading}
-                          className="px-6 py-2.5 rounded-full bg-[#5F5247] text-white hover:bg-[#7B6652] transition font-medium disabled:opacity-50"
-                        >
-                          {signingLoading ? 'Запрос кода...' : '✍️ Подписать договор'}
+                        <button onClick={requestOtp} disabled={signingLoading} className="px-6 py-2.5 rounded-full bg-[#2c3943] text-[#ece6e3] text-sm font-medium hover:bg-[#3d4f5c] transition disabled:opacity-50">
+                          {signingLoading ? 'Запрос кода...' : 'Подписать договор'}
                         </button>
                       )}
                       {selectedLoan.status === 'active' && (
-                        <>
-                          <button
-                            onClick={() => setShowPaymentModal(true)}
-                            className="px-6 py-2.5 rounded-full border border-[#5F5247] text-[#5F5247] hover:bg-[#5F5247] hover:text-white transition font-medium"
-                          >
-                            💳 Заявка на оплату
-                          </button>
-                          <button
-                            onClick={() => setShowContractModal(true)}
-                            className="px-6 py-2.5 rounded-full border border-[#5F5247] text-[#5F5247] hover:bg-[#5F5247] hover:text-white transition font-medium"
-                          >
-                            📄 Просмотр договора
-                          </button>
-                        </>
+                        <button onClick={() => setShowPaymentModal(true)} className="px-6 py-2.5 rounded-full border border-[#e5d4ca] text-[#2c3943] text-sm font-medium hover:bg-[#ece6e3] transition">Заявка на оплату</button>
                       )}
                     </div>
-                  </Card>
+                  </div>
 
-                  <Card className="p-6">
-                    <h3 className="text-xl font-semibold text-[#18181B] mb-4">График платежей</h3>
+                  <div className="bg-white border border-[#e5d4ca] rounded-2xl p-6 shadow-sm">
+                    <h3 className="text-lg font-medium text-[#2c3943] mb-4">График платежей</h3>
                     {paymentsLoading ? (
-                      <div className="text-center py-8 text-[#71717A]">Загрузка...</div>
+                      <div className="text-center py-8 text-[#77726f]">Загрузка...</div>
                     ) : payments.length === 0 ? (
-                      <div className="text-center py-8 text-[#71717A]">График платежей будет создан после подписания договора</div>
+                      <div className="text-center py-8 text-[#77726f]">График платежей будет создан после подписания договора</div>
                     ) : (
                       <div className="overflow-x-auto">
                         <table className="w-full">
                           <thead>
-                            <tr className="border-b border-[#E8E0D7]">
-                              <th className="text-left py-3 text-sm font-medium text-[#71717A]">Дата</th>
-                              <th className="text-left py-3 text-sm font-medium text-[#71717A]">Сумма</th>
-                              <th className="text-left py-3 text-sm font-medium text-[#71717A]">Статус</th>
+                            <tr className="border-b border-[#e5d4ca]">
+                              <th className="text-left py-3 text-xs font-medium text-[#9dabb4]">Дата</th>
+                              <th className="text-left py-3 text-xs font-medium text-[#9dabb4]">Сумма</th>
+                              <th className="text-left py-3 text-xs font-medium text-[#9dabb4]">Статус</th>
                             </tr>
                           </thead>
                           <tbody>
                             {payments.map((payment) => (
-                              <tr key={payment.id} className="border-b border-[#E8E0D7]">
+                              <tr key={payment.id} className="border-b border-[#e5d4ca]">
                                 <td className="py-3 text-sm">{new Date(payment.due_date).toLocaleDateString()}</td>
-                                <td className="py-3 text-sm font-medium">{payment.amount} €</td>
+                                <td className="py-3 text-sm">{payment.amount} €</td>
                                 <td className="py-3">
-                                  <span className={`inline-block px-2 py-1 text-xs rounded-full ${getStatusColor(payment.status)}`}>
-                                    {getStatusText(payment.status)}
+                                  <span className={`inline-block px-2 py-1 text-xs rounded-full ${payment.status === 'paid' ? 'bg-green-100 text-green-700' : payment.status === 'overdue' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                                    {payment.status === 'paid' ? 'Оплачен' : payment.status === 'overdue' ? 'Просрочен' : 'Ожидает'}
                                   </span>
                                 </td>
                               </tr>
@@ -361,32 +328,29 @@ export default function AccountPage() {
                         </table>
                       </div>
                     )}
-                  </Card>
+                  </div>
 
-                  {/* История платежей */}
-                  <Card className="p-6">
-                    <h3 className="text-xl font-semibold text-[#18181B] mb-4">История платежей</h3>
+                  <div className="bg-white border border-[#e5d4ca] rounded-2xl p-6 shadow-sm">
+                    <h3 className="text-lg font-medium text-[#2c3943] mb-4">История платежей</h3>
                     {payments.filter(p => p.status === 'paid').length === 0 ? (
-                      <p className="text-[#71717A] text-center py-4">Нет оплаченных платежей</p>
+                      <p className="text-[#77726f] text-center py-4 text-sm">Нет оплаченных платежей</p>
                     ) : (
                       <div className="overflow-x-auto">
                         <table className="w-full">
                           <thead>
-                            <tr className="border-b border-[#E8E0D7]">
-                              <th className="text-left py-3 text-sm font-medium text-[#71717A]">Дата оплаты</th>
-                              <th className="text-left py-3 text-sm font-medium text-[#71717A]">Сумма</th>
-                              <th className="text-left py-3 text-sm font-medium text-[#71717A]">Статус</th>
+                            <tr className="border-b border-[#e5d4ca]">
+                              <th className="text-left py-3 text-xs font-medium text-[#9dabb4]">Дата оплаты</th>
+                              <th className="text-left py-3 text-xs font-medium text-[#9dabb4]">Сумма</th>
+                              <th className="text-left py-3 text-xs font-medium text-[#9dabb4]">Статус</th>
                             </tr>
                           </thead>
                           <tbody>
                             {payments.filter(p => p.status === 'paid').map((payment) => (
-                              <tr key={payment.id} className="border-b border-[#E8E0D7]">
+                              <tr key={payment.id} className="border-b border-[#e5d4ca]">
                                 <td className="py-3 text-sm">{payment.paid_at ? new Date(payment.paid_at).toLocaleDateString() : new Date(payment.due_date).toLocaleDateString()}</td>
-                                <td className="py-3 text-sm font-medium">{payment.amount} €</td>
+                                <td className="py-3 text-sm">{payment.amount} €</td>
                                 <td className="py-3">
-                                  <span className="inline-block px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">
-                                    Оплачен
-                                  </span>
+                                  <span className="inline-block px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">Оплачен</span>
                                 </td>
                               </tr>
                             ))}
@@ -394,29 +358,26 @@ export default function AccountPage() {
                         </table>
                       </div>
                     )}
-                  </Card>
+                  </div>
                 </div>
               </div>
             ) : (
               <div className="space-y-4">
                 {loans.map((loan) => (
-                  <Card key={loan.id} className="p-5 md:p-6 cursor-pointer hover:shadow-md transition" onClick={() => selectLoan(loan)}>
+                  <div key={loan.id} className="bg-white border border-[#e5d4ca] rounded-2xl p-5 cursor-pointer hover:shadow-md transition shadow-sm" onClick={() => selectLoan(loan)}>
                     <div className="flex flex-wrap justify-between items-start gap-4">
                       <div>
-                        <p className="text-2xl font-bold text-[#18181B]">{loan.amount.toLocaleString()} €</p>
-                        <p className="text-[#71717A] text-sm mt-1">Срок: {loan.term} дней</p>
+                        <p className="text-xl font-medium text-[#2c3943]">{loan.amount.toLocaleString()} €</p>
+                        <p className="text-xs text-[#77726f] mt-1">Срок: {loan.term} дней</p>
                       </div>
                       <div className="text-right">
-                        <span className={`inline-block px-3 py-1 rounded-full text-sm ${
-                          loan.status === 'active' ? 'bg-green-100 text-green-700' :
-                          loan.status === 'pending_sign' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-600'
-                        }`}>
+                        <span className={`inline-block px-3 py-1 rounded-full text-xs ${loan.status === 'active' ? 'bg-green-100 text-green-700' : loan.status === 'pending_sign' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-600'}`}>
                           {loan.status === 'active' ? 'Активен' : loan.status === 'pending_sign' ? 'Ожидает подписания' : 'Закрыт'}
                         </span>
-                        <p className="text-xs text-[#A0A0A0] mt-2">Нажмите для деталей →</p>
+                        <p className="text-xs text-[#9dabb4] mt-2">Нажмите для деталей →</p>
                       </div>
                     </div>
-                  </Card>
+                  </div>
                 ))}
               </div>
             )}
@@ -426,32 +387,29 @@ export default function AccountPage() {
         {activeTab === 'applications' && (
           <div>
             {applications.length === 0 ? (
-              <Card className="text-center py-12">
+              <div className="bg-white border border-[#e5d4ca] rounded-2xl p-12 text-center shadow-sm">
                 <div className="text-5xl mb-4">📄</div>
-                <h3 className="text-xl font-semibold text-[#18181B] mb-2">У вас пока нет заявок</h3>
-                <p className="text-[#71717A] mb-6">Оставьте заявку на займ — это займёт всего несколько минут</p>
-                <Link href="/" className="inline-block px-8 py-3 rounded-full bg-[#5F5247] text-white hover:bg-[#7B6652] transition font-medium">Новая заявка</Link>
-              </Card>
+                <h3 className="text-xl font-medium text-[#2c3943] mb-2">У вас пока нет заявок</h3>
+                <p className="text-sm text-[#77726f] mb-6">Оставьте заявку на займ — это займёт всего несколько минут</p>
+                <Link href="/" className="inline-block px-8 py-3 rounded-full bg-[#2c3943] text-[#ece6e3] text-sm font-medium hover:bg-[#3d4f5c] transition">Новая заявка</Link>
+              </div>
             ) : (
               <div className="space-y-4">
                 {applications.map((app) => (
-                  <Card key={app.id} className="p-5 md:p-6">
+                  <div key={app.id} className="bg-white border border-[#e5d4ca] rounded-2xl p-5 shadow-sm">
                     <div className="flex flex-wrap justify-between items-center gap-4">
                       <div>
-                        <p className="text-2xl font-bold text-[#18181B]">{app.amount.toLocaleString()} €</p>
-                        <p className="text-[#71717A] text-sm mt-1">Срок: {app.term} дней</p>
-                        <p className="text-[#A0A0A0] text-xs mt-1">{new Date(app.created_at).toLocaleDateString()}</p>
+                        <p className="text-xl font-medium text-[#2c3943]">{app.amount.toLocaleString()} €</p>
+                        <p className="text-xs text-[#77726f] mt-1">Срок: {app.term} дней</p>
+                        <p className="text-xs text-[#9dabb4] mt-1">{new Date(app.created_at).toLocaleDateString()}</p>
                       </div>
                       <div>
-                        <span className={`inline-block px-3 py-1 rounded-full text-sm ${
-                          app.status === 'approved' ? 'bg-green-100 text-green-700' :
-                          app.status === 'rejected' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'
-                        }`}>
+                        <span className={`inline-block px-3 py-1 rounded-full text-xs ${app.status === 'approved' ? 'bg-green-100 text-green-700' : app.status === 'rejected' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'}`}>
                           {app.status === 'new' ? 'На рассмотрении' : app.status === 'approved' ? 'Одобрена' : 'Отклонена'}
                         </span>
                       </div>
                     </div>
-                  </Card>
+                  </div>
                 ))}
               </div>
             )}
@@ -461,24 +419,24 @@ export default function AccountPage() {
         {activeTab === 'notifications' && (
           <div>
             {notifications.length === 0 ? (
-              <Card className="text-center py-12">
+              <div className="bg-white border border-[#e5d4ca] rounded-2xl p-12 text-center shadow-sm">
                 <div className="text-5xl mb-4">🔔</div>
-                <h3 className="text-xl font-semibold text-[#18181B] mb-2">Нет уведомлений</h3>
-                <p className="text-[#71717A]">Здесь будут появляться уведомления о статусе ваших заявок и займов</p>
-              </Card>
+                <h3 className="text-xl font-medium text-[#2c3943] mb-2">Нет уведомлений</h3>
+                <p className="text-sm text-[#77726f]">Здесь будут появляться уведомления о статусе ваших заявок и займов</p>
+              </div>
             ) : (
               <div className="space-y-3">
                 {notifications.map((notif) => (
-                  <Card key={notif.id} className={`p-5 cursor-pointer hover:shadow-md transition ${!notif.is_read ? 'border-l-4 border-l-[#5F5247]' : ''}`} onClick={() => markNotificationRead(notif.id)}>
+                  <div key={notif.id} className={`bg-white border border-[#e5d4ca] rounded-2xl p-5 cursor-pointer hover:shadow-md transition shadow-sm ${!notif.is_read ? 'border-l-4 border-l-[#2c3943]' : ''}`} onClick={() => markNotificationRead(notif.id)}>
                     <div className="flex justify-between items-start">
                       <div>
-                        <h4 className="font-semibold text-[#18181B]">{notif.title}</h4>
-                        <p className="text-[#71717A] text-sm mt-1">{notif.message}</p>
-                        <p className="text-[#A0A0A0] text-xs mt-2">{new Date(notif.created_at).toLocaleString()}</p>
+                        <h4 className="font-medium text-[#2c3943]">{notif.title}</h4>
+                        <p className="text-sm text-[#77726f] mt-1">{notif.message}</p>
+                        <p className="text-xs text-[#9dabb4] mt-2">{new Date(notif.created_at).toLocaleString()}</p>
                       </div>
-                      {!notif.is_read && <div className="w-2 h-2 bg-[#5F5247] rounded-full"></div>}
+                      {!notif.is_read && <div className="w-2 h-2 bg-[#2c3943] rounded-full"></div>}
                     </div>
-                  </Card>
+                  </div>
                 ))}
               </div>
             )}
@@ -490,33 +448,19 @@ export default function AccountPage() {
       {showOtpModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 max-w-md w-full">
-            <h3 className="text-xl font-bold text-[#18181B] mb-4">Подписание договора</h3>
+            <h3 className="text-xl font-medium text-[#2c3943] mb-4">Подписание договора</h3>
             {!otpSent ? (
-              <p className="text-[#71717A] mb-4">Запрос кода...</p>
+              <p className="text-[#77726f] mb-4">Запрос кода...</p>
             ) : (
               <>
-                <p className="text-[#71717A] mb-4">Введите код из SMS</p>
-                <input
-                  type="text"
-                  value={otpCode}
-                  onChange={(e) => setOtpCode(e.target.value)}
-                  className="w-full bg-white border border-[#E8E0D7] rounded-xl p-3 text-[#18181B] text-center text-2xl font-mono mb-4"
-                  placeholder="000000"
-                  maxLength={6}
-                />
-                <button
-                  onClick={verifyOtp}
-                  disabled={signingLoading}
-                  className="w-full px-6 py-3 rounded-full bg-[#5F5247] text-white hover:bg-[#7B6652] transition font-medium disabled:opacity-50"
-                >
+                <p className="text-[#77726f] mb-4">Введите код из SMS</p>
+                <input type="text" value={otpCode} onChange={(e) => setOtpCode(e.target.value)} className="w-full text-center text-2xl font-mono mb-4" placeholder="000000" maxLength={6} />
+                <button onClick={verifyOtp} disabled={signingLoading} className="w-full bg-[#2c3943] text-[#ece6e3] py-3 rounded-full text-sm font-medium hover:bg-[#3d4f5c] transition disabled:opacity-50">
                   {signingLoading ? 'Проверка...' : 'Подтвердить'}
                 </button>
               </>
             )}
-            <button
-              onClick={() => { setShowOtpModal(false); setOtpCode(''); setOtpSent(false); }}
-              className="w-full mt-3 text-[#71717A] py-2 rounded-xl hover:text-[#18181B] transition"
-            >
+            <button onClick={() => { setShowOtpModal(false); setOtpCode(''); setOtpSent(false); }} className="w-full mt-3 text-[#77726f] py-2 rounded-xl hover:text-[#2c3943] transition">
               Отмена
             </button>
           </div>
@@ -527,104 +471,24 @@ export default function AccountPage() {
       {showPaymentModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 max-w-md w-full">
-            <h3 className="text-xl font-bold text-[#18181B] mb-4">Заявка на оплату</h3>
+            <h3 className="text-xl font-medium text-[#2c3943] mb-4">Заявка на оплату</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-[#71717A] text-sm mb-1">Сумма (€)</label>
-                <input
-                  type="number"
-                  value={paymentAmount}
-                  onChange={(e) => setPaymentAmount(e.target.value)}
-                  className="w-full bg-white border border-[#E8E0D7] rounded-xl p-3 focus:border-[#5F5247] outline-none"
-                  placeholder="Введите сумму"
-                />
+                <label className="block text-sm text-[#77726f] mb-1">Сумма (€)</label>
+                <input type="number" value={paymentAmount} onChange={(e) => setPaymentAmount(e.target.value)} className="w-full" placeholder="Введите сумму" />
               </div>
               <div>
-                <label className="block text-[#71717A] text-sm mb-1">Реквизиты / Reference</label>
-                <input
-                  type="text"
-                  value={paymentReference}
-                  onChange={(e) => setPaymentReference(e.target.value)}
-                  className="w-full bg-white border border-[#E8E0D7] rounded-xl p-3 focus:border-[#5F5247] outline-none"
-                  placeholder="Номер перевода / IBAN"
-                />
+                <label className="block text-sm text-[#77726f] mb-1">Реквизиты / Reference</label>
+                <input type="text" value={paymentReference} onChange={(e) => setPaymentReference(e.target.value)} className="w-full" placeholder="Номер перевода / IBAN" />
               </div>
               <div className="flex gap-3">
-                <button
-                  onClick={submitPaymentRequest}
-                  disabled={paymentLoading}
-                  className="flex-1 px-4 py-2.5 rounded-full bg-[#5F5247] text-white hover:bg-[#7B6652] transition font-medium disabled:opacity-50"
-                >
+                <button onClick={submitPaymentRequest} disabled={paymentLoading} className="flex-1 bg-[#2c3943] text-[#ece6e3] py-2.5 rounded-full text-sm font-medium hover:bg-[#3d4f5c] transition disabled:opacity-50">
                   {paymentLoading ? 'Отправка...' : 'Отправить'}
                 </button>
-                <button
-                  onClick={() => setShowPaymentModal(false)}
-                  className="flex-1 px-4 py-2.5 rounded-full border border-[#E8E0D7] text-[#71717A] hover:bg-gray-50 transition"
-                >
+                <button onClick={() => setShowPaymentModal(false)} className="flex-1 border border-[#e5d4ca] text-[#77726f] py-2.5 rounded-full hover:bg-[#ece6e3] transition">
                   Отмена
                 </button>
               </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Contract Modal */}
-      {showContractModal && selectedLoan && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-3xl w-full max-h-[80vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-2xl font-bold text-[#18181B]">Договор займа</h3>
-              <button onClick={() => setShowContractModal(false)} className="text-[#71717A] hover:text-[#18181B] text-2xl">×</button>
-            </div>
-            <div className="space-y-4 text-[#71717A]">
-              <div className="text-center mb-6">
-                <h2 className="text-3xl font-bold text-[#18181B]">ДОГОВОР ЗАЙМА №{selectedLoan.id}</h2>
-                <p className="text-sm mt-2">г. Лондон</p>
-              </div>
-              <div className="border-t border-[#E8E0D7] pt-4">
-                <p><strong>Сумма займа:</strong> {selectedLoan.amount.toLocaleString()} €</p>
-                <p><strong>Процентная ставка:</strong> {selectedLoan.daily_rate * 100}% в день</p>
-                <p><strong>Срок займа:</strong> {selectedLoan.term} дней</p>
-                <p><strong>Ежедневный платёж:</strong> {selectedLoan.payment_amount} €</p>
-                <p><strong>Общая сумма к возврату:</strong> {selectedLoan.total_amount} €</p>
-              </div>
-              <div className="border-t border-[#E8E0D7] pt-4">
-                <p><strong>1. Предмет договора</strong></p>
-                <p>Заимодавец передаёт Заёмщику денежные средства в размере {selectedLoan.amount.toLocaleString()} €, а Заёмщик обязуется возвратить указанную сумму с процентами в установленный срок.</p>
-              </div>
-              <div className="border-t border-[#E8E0D7] pt-4">
-                <p><strong>2. Порядок погашения</strong></p>
-                <p>Погашение осуществляется ежедневно равными платежами в течение {selectedLoan.term} дней.</p>
-              </div>
-              <div className="border-t border-[#E8E0D7] pt-4">
-                <p><strong>3. Ответственность сторон</strong></p>
-                <p>За несвоевременное погашение займа Заёмщик несёт ответственность в соответствии с условиями договора.</p>
-              </div>
-              <div className="border-t border-[#E8E0D7] pt-4">
-                <p><strong>4. Подписи сторон</strong></p>
-                <div className="flex justify-between mt-8">
-                  <div>
-                    <p>Заимодавец: ______________</p>
-                    <p className="text-sm text-[#A0A0A0]">LumenBridge Finance Ltd</p>
-                  </div>
-                  <div>
-                    <p>Заёмщик: ______________</p>
-                    <p className="text-sm text-[#A0A0A0]">{user?.phone || 'Клиент'}</p>
-                  </div>
-                </div>
-                {selectedLoan.signed_at && (
-                  <p className="text-sm text-[#A0A0A0] mt-4">Подписан: {new Date(selectedLoan.signed_at).toLocaleDateString()}</p>
-                )}
-              </div>
-            </div>
-            <div className="mt-6 flex justify-end">
-              <button
-                onClick={() => setShowContractModal(false)}
-                className="px-6 py-2.5 rounded-full bg-[#5F5247] text-white hover:bg-[#7B6652] transition font-medium"
-              >
-                Закрыть
-              </button>
             </div>
           </div>
         </div>
