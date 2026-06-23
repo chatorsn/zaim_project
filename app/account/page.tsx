@@ -347,7 +347,6 @@ export default function AccountPage() {
                           <tbody>
                             {payments.filter(p => p.status === 'paid').map((payment) => (
                               <tr key={payment.id} className="border-b border-[#e5d4ca]">
-                                <td className="py-3 text-sm">{payment.paid_at ? new Date(payment.paid_at).toLocaleDateString() : new Date(payment.due_date).toLocaleDateString()}</td>
                                 <td className="py-3 text-sm">{payment.amount} €</td>
                                 <td className="py-3">
                                   <span className="inline-block px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">Оплачен</span>

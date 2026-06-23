@@ -17,8 +17,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Проверяем OTP (в реальном проекте — сверяем с сохранённым в БД)
-    // Для демо: любой OTP 1234 работает
     if (otp !== '1234') {
       return NextResponse.json(
         { error: 'Invalid OTP code' },
@@ -26,7 +24,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Получаем займ
     const loanResult = await pool.query(
       'SELECT * FROM loans WHERE id = $1',
       [loanId]
@@ -41,7 +38,6 @@ export async function POST(req: NextRequest) {
 
     const loan = loanResult.rows[0];
 
-    // Проверяем, что займ в статусе ожидания подписания
     if (loan.status !== 'pending_sign') {
       return NextResponse.json(
         { error: 'Loan is not pending signature' },
@@ -49,12 +45,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Подписываем займ
     const userAgent = req.headers.get('user-agent') || 'unknown';
-    const ip = req.headers.get('x-forwarded-for')?.split(',')[0] || 
-               req.headers.get('x-real-ip') || 
-               req.ip || 
-               '127.0.0.1';
+    const forwarded = req.headers.get('x-forwarded-for');
+    const ip = forwarded ? forwarded.split(',')[0] : '127.0.0.1';
 
     await pool.query(
       `UPDATE loans 
@@ -66,7 +59,6 @@ export async function POST(req: NextRequest) {
       [ip, userAgent, loanId]
     );
 
-    // Создаём график платежей
     const totalAmount = Number(loan.total_amount);
     const term = loan.term;
     const paymentAmount = Number(loan.payment_amount);
