@@ -1,6 +1,3 @@
-Вот готовый текст README:
-
----
 
 # LumenBridge Finance
 
