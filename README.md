@@ -1,77 +1,63 @@
-
 # LumenBridge Finance
 
 Fullstack MVP финансового сервиса LumenBridge Finance Ltd.
 
+---
+
 ## Технологии
 
-- **Frontend:** Next.js 15, TypeScript, Tailwind CSS, Framer Motion
+- **Frontend:** Next.js 15, TypeScript, Tailwind CSS
 - **Backend:** Next.js API Routes, PostgreSQL
-- **Архитектура:** Feature-Sliced Design (FSD)
 - **База данных:** PostgreSQL
 - **Аутентификация:** JWT, OTP (mock)
 
 ---
 
-## Функциональность
+## Точки входа
 
-### Публичная часть
-- Лендинг с калькулятором аннуитетных платежей
-- Форма подачи заявки на займ
-- Страницы: "Как работает", "Для бизнеса", FAQ, Контакты
+| Назначение | URL |
+|---|---|
+| **Главная страница** | http://localhost:3000 |
+| **Личный кабинет** | http://localhost:3000/login |
+| **Админ-панель** | http://localhost:3000/admin/login |
 
-### Личный кабинет
-- Вход по номеру телефона (SMS-код выводится в терминал)
-- Просмотр заявок со статусами
-- Просмотр активных и закрытых займов
-- Детальная карточка займа с графиком платежей
-- Подписание займа через OTP-код
-- Создание заявки на оплату
-- Уведомления о статусах
+---
 
-### Админ-панель
-- Вход по логину/паролю
-- Ролевая модель: **admin** (полный доступ) и **operator** (обработка заявок)
-- Управление заявками (просмотр, одобрение, отклонение)
-- Управление займами (просмотр, закрытие)
-- Управление клиентами (просмотр)
-- Подтверждение заявок на оплату
-- Просмотр системных уведомлений
+## Переменные окружения
 
-### Ключевые сценарии
-1. **Подача заявки** → админ одобряет → создаётся займ (ожидает подписания)
-2. **Подписание займа** через OTP → создаётся график платежей
-3. **Пользователь** создаёт заявку на оплату → админ подтверждает
-4. **Платеж** фиксируется → график обновляется → займ закрывается
+Для работы приложения требуется **один** файл `.env.local` в корне проекта:
+
+```env
+# Единая строка подключения к PostgreSQL
+DATABASE_URL="postgresql://postgres:password@localhost:5432/lumenbridge"
+
+# JWT секрет для админ-панели (опционально)
+# JWT_SECRET="your-secret-key"
+```
+
+**Важно:** Все API-роуты и подключения к БД используют **только одну** переменную `DATABASE_URL`. Никаких `POSTGRES_HOST`, `POSTGRES_USER`, `POSTGRES_PASSWORD` и т.д. — только одна строка подключения.
 
 ---
 
 ## Установка и запуск
 
-### 1. Клонирование репозитория
-```bash
-git clone https://github.com/chatorsn/zaim_project.git
-cd zaim_project
-```
+### Способ 1: Без Docker (локально)
 
-### 2. Настройка базы данных PostgreSQL
-
-#### Установка PostgreSQL (Ubuntu/Debian)
+#### 1. Установка PostgreSQL
 ```bash
 sudo apt update
 sudo apt install postgresql postgresql-contrib
 sudo systemctl start postgresql
-sudo systemctl enable postgresql
 ```
 
-#### Создание базы данных
+#### 2. Создание базы данных
 ```bash
 sudo -u postgres psql -c "CREATE DATABASE lumenbridge;"
 sudo -u postgres psql -c "CREATE USER intern WITH PASSWORD 'password123';"
 sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE lumenbridge TO intern;"
 ```
 
-#### Создание схемы базы данных
+#### 3. Применение схемы
 ```bash
 psql -d lumenbridge -U intern -h localhost << 'EOF'
 CREATE TABLE IF NOT EXISTS users (
@@ -158,86 +144,119 @@ CREATE INDEX idx_payment_requests_loan_id ON payment_requests(loan_id);
 EOF
 ```
 
-### 3. Настройка переменных окружения
-
-Создайте файл `.env.local` в корне проекта:
+#### 4. Запуск приложения
 ```bash
-DATABASE_URL="postgresql://intern:password123@localhost:5432/lumenbridge"
-```
+# Клонирование
+git clone https://github.com/chatorsn/zaim_project.git
+cd zaim_project
 
-### 4. Установка зависимостей и запуск
-
-```bash
 # Установка зависимостей
 npm install
 
-# Запуск в режиме разработки
-npm run dev
+# Настройка .env.local
+echo 'DATABASE_URL="postgresql://intern:password123@localhost:5432/lumenbridge"' > .env.local
 
-# Сборка и запуск в production
-npm run build
-npm run start
+# Запуск
+npm run dev
 ```
 
-Приложение будет доступно по адресу: **http://localhost:3000**
+---
+
+### Способ 2: Через Docker (рекомендуемый)
+
+#### 1. Сборка и запуск
+```bash
+# Клонирование
+git clone https://github.com/chatorsn/zaim_project.git
+cd zaim_project
+
+# Сборка Docker-образа
+docker build -t lumenbridge .
+
+# Запуск контейнера с БД
+docker-compose up -d
+```
+
+#### 2. Переменные окружения в Docker
+В `docker-compose.yml` используются **те же переменные**, что и в `.env.local`:
+
+```yaml
+environment:
+  DATABASE_URL: "postgresql://postgres:password@postgres:5432/lumenbridge"
+```
+
+**Важно:** В Docker-контейнере используется **единственная** переменная `DATABASE_URL`, а не отдельные `POSTGRES_HOST`, `POSTGRES_USER` и т.д.
+
+#### 3. Применение схемы в Docker
+```bash
+# Копируем схему в контейнер
+docker cp db/schema.sql lumenbridge-app:/tmp/
+
+# Применяем
+docker exec -it lumenbridge-app psql -U postgres -d lumenbridge -f /tmp/schema.sql
+```
+
+#### 4. Доступ к приложению
+- **Сайт:** http://localhost:3000
+- **Админка:** http://localhost:3000/admin/login
 
 ---
 
 ## Данные для входа
 
-### Админ-панель
-- **Администратор:** `admin` / `admin123` (полный доступ)
-- **Оператор:** `operator` / `operator123` (только обработка заявок, займов и платежей)
+| Роль | Логин | Пароль | Доступ |
+|---|---|---|---|
+| **Администратор** | `admin` | `admin123` | Полный доступ ко всем разделам админки |
+| **Оператор** | `operator` | `operator123` | Обработка заявок, займов и платежей |
 
-### Пользователь (личный кабинет)
-- Вход по номеру телефона с SMS-кодом
-- **Важно:** В демо-режиме код выводится в терминал (mock OTP)
-- Для тестирования используйте любой номер телефона, например: `+1234567890`
-
----
-
-## Структура проекта (FSD)
-
-```
-app/
-├── account/          # Личный кабинет пользователя
-├── admin/            # Административная панель
-├── api/              # API Routes (backend)
-├── components/       # UI-компоненты
-├── lib/              # Работа с базой данных
-├── features/         # Бизнес-логика
-└── shared/           # Переиспользуемые компоненты
-```
+**Пользователь (личный кабинет):**
+- Вход по номеру телефона
+- SMS-код выводится в терминал (mock-режим)
+- Тестовый номер: `+1234567890`
 
 ---
 
-## Калькулятор займа
+## Как доставить пользователям (деплой)
 
-Формула аннуитетного платежа:
-```
-A = P × (r × (1 + r)^n) / ((1 + r)^n − 1)
+### Локальный деплой (production)
+```bash
+npm run build
+npm run start
 ```
 
-Где:
-- `A` — размер платежа в день
-- `P` — сумма займа
-- `r` — процентная ставка в день (0.8% = 0.008)
-- `n` — срок займа в днях
+### Docker-деплой
+```bash
+docker-compose up -d
+```
 
-Общая сумма к возврату:
+### На сервере (VPS)
+```bash
+# 1. Установить Docker и Docker Compose
+# 2. Склонировать репозиторий
+git clone https://github.com/chatorsn/zaim_project.git
+cd zaim_project
+
+# 3. Запустить
+docker-compose up -d
+
+# 4. Настроить Nginx (прокси на порт 3000)
 ```
-Total = A × n
-```
+
+---
+
+## Структура переменных окружения
+
+| Переменная | Описание | Пример |
+|---|---|---|
+| `DATABASE_URL` | **Единственная** строка подключения к PostgreSQL | `postgresql://postgres:password@localhost:5432/lumenbridge` |
+| `NODE_ENV` | Режим работы (опционально) | `production` |
+| `JWT_SECRET` | Секрет для JWT (опционально) | `your-secret-key` |
 
 ---
 
 ## Mock-сценарии
 
-В учебном проекте используются следующие mock-сценарии:
-
-- **SMS OTP:** Код выводится в терминал (не отправляется реально)
+- **SMS OTP:** Код выводится в терминал
 - **Подписание займа:** Любой OTP-код `1234` работает
 - **Платежи:** Ручное подтверждение администратором
-- **График платежей:** Создается автоматически после подписания
-
 
